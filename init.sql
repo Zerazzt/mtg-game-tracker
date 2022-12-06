@@ -48,49 +48,49 @@ DELIMITER $$
 CREATE TRIGGER `game_added` BEFORE INSERT ON `game_participation`
 FOR EACH ROW
 BEGIN
-UPDATE `players`
-SET
-	`wins`=`wins`+IF(
-        (
-            SELECT `games`.`winning_player`
-        	FROM `games`
-        	WHERE `games`.`id`=`new`.`game_id`
-        )=`new`.`player_id`,
-        1,
-        0
-    ),
-    `losses`=`losses`+IF(
-        (
-            SELECT `games`.`winning_player`
-        	FROM `games`
-        	WHERE `games`.`id`=`new`.`game_id`
-		)=`new`.`player_id`,
-		0,
-		1
-	)
-WHERE `id`=`new`.`player_id`;
+	UPDATE `players`
+	SET
+		`wins`=`wins`+IF(
+			(
+				SELECT `games`.`winning_player`
+				FROM `games`
+				WHERE `games`.`id`=`new`.`game_id`
+			)=`new`.`player_id`,
+			1,
+			0
+			),
+		`losses`=`losses`+IF(
+			(
+				SELECT `games`.`winning_player`
+				FROM `games`
+				WHERE `games`.`id`=`new`.`game_id`
+			)=`new`.`player_id`,
+			0,
+			1
+			)
+	WHERE `id`=`new`.`player_id`;
 
-UPDATE `decks`
-SET
-	`wins`=`wins`+IF(
-        (
-            SELECT `games`.`winning_deck`
-        	FROM `games`
-        	WHERE `games`.`id`=`new`.`game_id`
-        )=`new`.`deck_id`,
-        1,
-        0
-    ),
-    `losses`=`losses`+IF(
-        (
-            SELECT `games`.`winning_deck`
-        	FROM `games`
-        	WHERE `games`.`id`=`new`.`game_id`
-		)=`new`.`deck_id`,
-		0,
-		1
-	)
-WHERE `id`=`new`.`deck_id`;
+	UPDATE `decks`
+	SET
+		`wins`=`wins`+IF(
+			(
+				SELECT `games`.`winning_deck`
+				FROM `games`
+				WHERE `games`.`id`=`new`.`game_id`
+			)=`new`.`deck_id`,
+			1,
+			0
+			),
+		`losses`=`losses`+IF(
+			(
+				SELECT `games`.`winning_deck`
+				FROM `games`
+				WHERE `games`.`id`=`new`.`game_id`
+			)=`new`.`deck_id`,
+			0,
+			1
+			)
+	WHERE `id`=`new`.`deck_id`;
 END;
 $$
 DELIMITER ;
