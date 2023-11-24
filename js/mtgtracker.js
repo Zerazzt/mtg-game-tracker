@@ -7,7 +7,6 @@ window.addEventListener("DOMContentLoaded", () => {
 	for (let btn of openButtons) {
 		btn.addEventListener("click", (ev) => {
 			ev.preventDefault();
-			// addModal.style.display = "block";
 			addModal.show();
 			const getFormElements = new XMLHttpRequest();
 			getFormElements.open("get", `./php/async/${btn.name}.php`);
@@ -93,7 +92,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
 	window.onclick = (ev) => {
 		if (ev.target == addModal) {
-			// addModal.style.display = "none";
 			addModal.close();
 			
 			addModal.firstElementChild.firstElementChild.nextElementSibling.classList.remove(["user", "deck", "game"]);
