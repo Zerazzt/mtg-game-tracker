@@ -39,6 +39,11 @@ window.addEventListener("DOMContentLoaded", () => {
 								pSelect.options[pSelect.options.length] = new Option(data[1], data[0]);
 							}
 						}
+						pSelect.addEventListener("change", (ev) => {
+							const oSelect = ev.target.parentElement.nextElementSibling.firstElementChild.nextElementSibling;
+							oSelect.selectedIndex = ev.target.selectedIndex;
+							oSelect.dispatchEvent(new Event("change"));
+						});
 					}
 					for (let oSelect of ownerSelections) {
 						const dSelect = oSelect.parentElement.nextElementSibling.firstElementChild.nextElementSibling;
