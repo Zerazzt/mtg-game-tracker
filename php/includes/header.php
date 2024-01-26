@@ -1,7 +1,7 @@
 <header>
 	<nav>
 		<ul>
-			<li><a href="index.php">Home</a></li>
+			<li><a href="/">Home</a></li>
 			<li class="right">
 				<ul>
 					<?php
@@ -13,7 +13,7 @@
 					}
 					foreach($page_list as $file):
 					?>
-					<li><a href="<?= $file . ".php" ?>"><?= $page_titles[$file] ?></a></li>
+					<li><a href="<?= $page_routes[$file] ?>"><?= $page_titles[$file] ?></a></li>
 					<?php endforeach; ?>
 				</ul>
 			</li>

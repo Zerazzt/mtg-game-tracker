@@ -9,7 +9,7 @@ window.addEventListener("DOMContentLoaded", () => {
 			ev.preventDefault();
 			addModal.show();
 			const getFormElements = new XMLHttpRequest();
-			getFormElements.open("get", `./php/async/${btn.name}.php`);
+			getFormElements.open("get", `/php/async/${btn.name}.php`);
 			getFormElements.addEventListener("load", (ev) => {
 				if (getFormElements.status == 200) {
 					addModal.innerHTML = getFormElements.response;
@@ -25,7 +25,7 @@ window.addEventListener("DOMContentLoaded", () => {
 			const ownerSelections = document.getElementsByClassName("ownerSelect");
 
 			const getPlayerList = new XMLHttpRequest();
-			getPlayerList.open("get", `php/async/get_players.php`);
+			getPlayerList.open("get", `/php/async/get_players.php`);
 			getPlayerList.addEventListener("load", (ev) => {
 				if (getPlayerList.status == 200) {
 					const players = getPlayerList.response.split("/");
@@ -57,7 +57,7 @@ window.addEventListener("DOMContentLoaded", () => {
 						oSelect.addEventListener("change", (ev) => {
 							if (oSelect.value != "" && addModal.firstElementChild.nextElementSibling.classList.contains("game")) {
 								const getDeckList = new XMLHttpRequest();
-								getDeckList.open("get", `php/async/get_decks.php?id=${encodeURI(oSelect.value)}`);
+								getDeckList.open("get", `/php/async/get_decks.php?id=${encodeURI(oSelect.value)}`);
 								getDeckList.addEventListener("load", (ev) => {
 									if (getDeckList.status == 200) {
 										const decks = getDeckList.response.split("/");

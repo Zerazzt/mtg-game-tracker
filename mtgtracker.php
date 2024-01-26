@@ -108,7 +108,7 @@ if (isset($_POST["addGame"])) {
 
 require_once "php/includes/head.php";
 ?>
-<script defer src="js/mtgtracker.js"></script>
+<script defer src="/js/mtgtracker.js"></script>
 <?php
 require_once "php/includes/header.php";
 ?>

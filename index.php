@@ -70,7 +70,7 @@ require_once "php/includes/header.php";
 			</tr>
 			<?php while ($game = $games->fetch()): ?>
 			<tr>
-				<td><a href="/viewgame.php?id=<?= $game['id'] ?>"><?= $game['id'] ?></a></td>
+				<td><a href="/view/game?id=<?= $game['id'] ?>"><?= $game['id'] ?></a></td>
 				<td><?= $game['date'] ?></td>
 				<td><?= $game['name'] ?></td>
 				<td><?= $game['commander'] ?></td>

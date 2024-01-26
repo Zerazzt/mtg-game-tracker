@@ -24,5 +24,13 @@ $page_titles = [ // Mapping of file names to page titles.
 	"viewgame"       => "View Game"
 ];
 
+$page_routes = [
+	"index"          => "/",
+	"mtgtracker"     => "/tracker",
+	"login"          => "/login",
+	"logout"         => "/logout",
+	"compareplayers" => "/compare/players"
+];
+
 DEFINE("MAX_PLAYER_COUNT", 8);
 ?>

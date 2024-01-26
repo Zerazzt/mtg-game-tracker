@@ -28,7 +28,7 @@ if (isset($_POST['submit'])) {
 	else {
 		$_SESSION['email'] = $email;
 		$_SESSION['id'] = $user['id'];
-		header("location:index.php");
+		header("location:/");
 		die();
 	}
 }
