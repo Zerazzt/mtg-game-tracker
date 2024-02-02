@@ -12,7 +12,7 @@ if (isset($_COOKIE["user"]) && isset($_COOKIE["uid"])) {
 }
 
 if (in_array($page_name, $require_logged_in) && !isset($_SESSION["id"])) {
-	header("location:login.php");
+	header("location:/login/");
 	die();
 }
 ?>
