@@ -51,7 +51,6 @@ require_once "php/includes/header.php";
 				<input type="password" name="password" id="password"><span class="error <?= isset($errors['password']) ? "" : "hidden" ?>">Incorrect password.</span>
 			</div>
 			<button type="submit" name="submit">Log In</button>
-			<p>Forgot your password? Click <a href="forgot.php">here.</a></p>
 		</form>
 	</div>
 </main>
