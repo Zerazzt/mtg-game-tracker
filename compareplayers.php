@@ -3,6 +3,14 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once "php/includes/start.php";
 
+$id1 = $_POST['player1'] ?? null;
+$id2 = $_POST['player2'] ?? null;
+
+if (isset($id1) && isset($id2)) {
+	header("location:/compare/players/$id1/$id2/");
+	die();
+}
+
 $pdo = connectDB();
 
 $playersQuery = "SELECT id, name FROM `players`";
@@ -18,11 +26,19 @@ foreach ($playersStmt as $player) {
 $id1 = $_GET['player1'] ?? null;
 $id2 = $_GET['player2'] ?? null;
 
+if ($id1 == "") {
+	$id1 = null;
+}
+
+if ($id2 == "") {
+	$id2 = null;
+}
+
 $matchup = array();
 
 $games = array();
 
-if (isset($_GET['viewMatchup'])) {
+if (isset($id1) && isset($id2)) {
 	$query = "CALL `PlayerHeadToHead`(?, ?)";
 	$results = $pdo->prepare($query);
 	$results->execute([$id1, $id2]);
@@ -46,11 +62,11 @@ require_once "php/includes/header.php";
 <main>
 	<div class="middle">
 		<h2>Compare Players</h2>
-		<form method="get" class="container user">
+		<form method="post" class="container user">
 			<div>
 				<label for="player1">Player 1:</label>
 				<select class="playerSelect" id="player1" name="player1">
-					<option value="-1" <?= isset($id1) ? "" : "selected" ?>></option>
+					<option <?= isset($id1) ? "" : "selected" ?>></option>
 					<?php foreach ($players as $player): ?>
 					<option value=<?= $player['id'] ?> <?= $player['id'] == $id1 ? "selected" : "" ?>><?= $player['name'] ?></option>
 					<?php endforeach; ?>
@@ -59,13 +75,13 @@ require_once "php/includes/header.php";
 			<div>
 				<label for="player2">Player 2:</label>
 				<select class="playerSelect" id="player2" name="player2">
-					<option value="-1" <?= isset($id2) ? "" : "selected" ?>></option>
+					<option <?= isset($id2) ? "" : "selected" ?>></option>
 					<?php foreach ($players as $player): ?>
 					<option value=<?= $player['id'] ?> <?= $player['id'] == $id2 ? "selected" : "" ?>><?= $player['name'] ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
-			<button type="submit" name="viewMatchup">Submit</button>
+			<button type="submit">Submit</button>
 		</form>
 
 		<table>
@@ -86,7 +102,7 @@ require_once "php/includes/header.php";
 		</table>
 
 		<?php foreach ($games as $game): ?>
-		<a href="/viewgame.php?id=<?= $game['id'] ?>">Game <?= $game['id'] ?></a>
+		<a href="/view/game/<?= $game['id'] ?>/">Game <?= $game['id'] ?></a>
 		<?php endforeach; ?>
 	</div>
 </main>
