@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once "php/includes/start.php";
 
 $pdo = connectDB();
@@ -70,7 +72,7 @@ require_once "php/includes/header.php";
 			</tr>
 			<?php while ($game = $games->fetch()): ?>
 			<tr>
-				<td><a href="/view/game/<?= $game['id'] ?>/"><?= $game['id'] ?></a></td>
+				<td><a href="<?= $pages['viewgame']['route'].$game['id']."/"?>"><?= $game['id'] ?></a></td>
 				<td><?= $game['date'] ?></td>
 				<td><?= $game['name'] ?></td>
 				<td><?= $game['commander'] ?></td>

@@ -7,7 +7,7 @@ $id1 = $_POST['player1'] ?? null;
 $id2 = $_POST['player2'] ?? null;
 
 if (isset($id1) && isset($id2)) {
-	header("location:/compare/players/$id1/$id2/");
+	header("location:".$pages["compareplayers"]["route"]."$id1/$id2/");
 	die();
 }
 
@@ -102,7 +102,7 @@ require_once "php/includes/header.php";
 		</table>
 
 		<?php foreach ($games as $game): ?>
-		<a href="/view/game/<?= $game['id'] ?>/">Game <?= $game['id'] ?></a>
+		<a href="<?= $pages['viewgame']['route'].$game['id']."/" ?>">Game <?= $game['id'] ?></a>
 		<?php endforeach; ?>
 	</div>
 </main>

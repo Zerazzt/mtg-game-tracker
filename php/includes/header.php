@@ -5,16 +5,12 @@
 			<li class="right">
 				<ul>
 					<?php
-					if (isset($_SESSION["id"])) {
-						$page_list = $logged_in_nav;
-					}
-					else {
-						$page_list = $logged_out_nav;
-					}
-					foreach($page_list as $file):
+					$navSet = isset($_SESSION['id']) ? 'logged_in_nav' : 'logged_out_nav';
+					foreach($pages as $page):
+						if ($page[$navSet]):
 					?>
-					<li><a href="<?= $page_routes[$file] ?>"><?= $page_titles[$file] ?></a></li>
-					<?php endforeach; ?>
+					<li><a href="<?= $page['route'] ?>"><?= $page['title'] ?></a></li>
+					<?php endif; endforeach; ?>
 				</ul>
 			</li>
 		</ul>

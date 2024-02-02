@@ -1,35 +1,54 @@
 <?php
-$logged_in_nav = [ // Pages which show up in the nav when logged in.
-	"mtgtracker",
-	"compareplayers",
-	"logout"
-];
-
-$logged_out_nav = [ // Pages which show up in the nav when logged out.
-	"compareplayers",
-	"login"
-];
-
-$require_logged_in = [ // Pages which require the user to be logged in to access.
-	"logout",
-	"mtgtracker"
-];
-
-$page_titles = [ // Mapping of file names to page titles.
-	"index"          => "Home",
-	"mtgtracker"     => "Add Results",
-	"compareplayers" => "Compare Players",
-	"logout"         => "Log Out",
-	"login"          => "Log In",
-	"viewgame"       => "View Game"
-];
-
-$page_routes = [
-	"index"          => "/",
-	"mtgtracker"     => "/tracker/",
-	"login"          => "/login/",
-	"logout"         => "/logout/",
-	"compareplayers" => "/compare/players/"
+$pages = [
+	"index" => [
+		"route" => "/",
+		"title" => "Trent Magic the Gathering Community",
+		"require_logged_in" => false,
+		"logged_in_nav" => false,
+		"logged_out_nav" => false,
+	],
+	"mtgtracker" => [
+		"route" => "/tracker/",
+		"title" => "Add Results",
+		"require_logged_in" => true,
+		"logged_in_nav" => true,
+		"logged_out_nav" => false,
+	],
+	"comparedecks" => [
+		"route" => "/compare/decks/",
+		"title" => "Compare Decks",
+		"require_logged_in" => true,
+		"logged_in_nav" => false,
+		"logged_out_nav" => false,
+	],
+	"compareplayers" => [
+		"route" => "/compare/players/",
+		"title" => "Compare Players",
+		"require_logged_in" => false,
+		"logged_in_nav" => true,
+		"logged_out_nav" => true,
+	],
+	"login" => [
+		"route" => "/login/",
+		"title" => "Login",
+		"require_logged_in" => false,
+		"logged_in_nav" => false,
+		"logged_out_nav" => true,
+	],
+	"logout" => [
+		"route" => "/logout/",
+		"title" => "Logout",
+		"require_logged_in" => true,
+		"logged_in_nav" => true,
+		"logged_out_nav" => false,
+	],
+	"viewgame" => [
+		"route" => "/view/game/",
+		"title" => "View Game",
+		"require_logged_in" => true,
+		"logged_in_nav" => false,
+		"logged_out_nav" => false,
+	],
 ];
 
 DEFINE("MAX_PLAYER_COUNT", 8);
