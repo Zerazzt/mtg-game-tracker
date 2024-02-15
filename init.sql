@@ -218,7 +218,7 @@ RIGHT JOIN (
 		GROUP BY `games`.`id`
 		HAVING COUNT(`games`.`id`) = player_count
 	) AS `all_restricted_games`
-	ON `game_participation`.`game_id` = `all_restrited_games`.`id`
+	ON `game_participation`.`game_id` = `all_restricted_games`.`id`
 	LEFT JOIN `players`
 	ON `game_participation`.`player_id` = `players`.`id`
 	GROUP BY `game_participation`.`player_id`
