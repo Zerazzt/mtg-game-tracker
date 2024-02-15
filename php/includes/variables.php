@@ -45,7 +45,7 @@ $pages = [
 	"viewgame" => [
 		"route" => "/view/game/",
 		"title" => "View Game",
-		"require_logged_in" => true,
+		"require_logged_in" => false,
 		"logged_in_nav" => false,
 		"logged_out_nav" => false,
 	],
