@@ -60,7 +60,7 @@ require_once "php/includes/head.php";
 require_once "php/includes/header.php";
 ?>
 <main>
-	<div class="middle">
+	<div class="single">
 		<h2>Compare Players</h2>
 		<form method="post" class="container user">
 			<div>

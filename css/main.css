@@ -72,8 +72,14 @@ nav a, nav a:visited {
 	padding:0 0.75rem;
 }
 
-.middle {
+.middle,
+.single {
 	grid-area:middle;
+}
+
+.single {
+	max-width:50rem;
+	margin:0 auto;
 }
 
 .error {

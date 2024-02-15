@@ -20,7 +20,7 @@ require_once "php/includes/head.php";
 require_once "php/includes/header.php";
 ?>
 <main>
-	<div class="middle">
+	<div class="single">
 		<table>
 			<tr>
 				<th>Turn Order</th>
@@ -35,5 +35,6 @@ require_once "php/includes/header.php";
 			</tr>
 			<?php endwhile; ?>
 		</table>
+		<span>Played on: <?= $game['date'] ?></span>
 	</div>
 </main>
