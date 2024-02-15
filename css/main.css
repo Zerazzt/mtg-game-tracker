@@ -20,7 +20,7 @@ header {
 main {
 	grid-area:body;
 	margin:1rem 0rem;
-	/* padding:0.5rem; */
+	padding:1rem 0rem;
 	background-color:#fff;
 	display:grid;
 	grid-template-areas: "left middle right";
@@ -67,8 +67,7 @@ nav a, nav a:visited {
 
 .left {
 	grid-area:left;
-	max-width:15vw;
-	/* border-right:0.3rem #000 solid; */
+	max-width:20vw;
 	padding:0 0.75rem;
 }
 
@@ -91,6 +90,7 @@ nav a, nav a:visited {
 }
 
 h1 {
+	text-align:center;
 	font-size:2.5rem;
 	font-weight:900;
 }
@@ -324,7 +324,19 @@ tr:first-of-type:hover {
 }
 
 tr.winner {
-	font-weight:bold;
+	background-color:#90ee90;
+}
+
+tr.winner:hover {
+	background-color:#40fc40;
+}
+
+tr.loser {
+	background-color:#ee9090;
+}
+
+tr.loser:hover {
+	background-color:#ee7070;
 }
 
 @keyframes fade {

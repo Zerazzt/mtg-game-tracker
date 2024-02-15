@@ -49,6 +49,20 @@ $pages = [
 		"logged_in_nav" => false,
 		"logged_out_nav" => false,
 	],
+	"viewplayer" => [
+		"route" => "/view/player/",
+		"title" => "View Player",
+		"require_logged_in" => false,
+		"logged_in_nav" => false,
+		"logged_out_nav" => false,
+	],
+	"viewdeck" => [
+		"route" => "/view/deck/",
+		"title" => "View Deck",
+		"require_logged_in" => false,
+		"logged_in_nav" => false,
+		"logged_out_nav" => false,
+	],
 ];
 
 DEFINE("MAX_PLAYER_COUNT", 8);

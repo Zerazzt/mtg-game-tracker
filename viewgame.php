@@ -10,7 +10,7 @@ $games = $pdo->prepare($gamesQuery);
 $games->execute([$id]);
 $game = $games->fetch();
 
-$participantsQuery = "SELECT `game_participation`.`player_id`, `players`.`name`, `decks`.`commander`, `game_participation`.`turn_order` FROM `game_participation` LEFT JOIN `players` ON `game_participation`.`player_id` = `players`.`id` LEFT JOIN `decks` ON `game_participation`.`deck_id` = `decks`.`id` WHERE `game_id` = ? ORDER BY `turn_order` ASC";
+$participantsQuery = "SELECT `players`.`id` AS `player id`, `players`.`name`, `decks`.`id` AS `deck id`, `decks`.`commander`, `decks`.`partner`, `game_participation`.`turn_order` FROM `game_participation` LEFT JOIN `players` ON `game_participation`.`player_id` = `players`.`id` LEFT JOIN `decks` ON `game_participation`.`deck_id` = `decks`.`id` WHERE `game_id` = ? ORDER BY `turn_order` ASC";
 $participants = $pdo->prepare($participantsQuery);
 $participants->execute([$id]);
 
@@ -28,10 +28,10 @@ require_once "php/includes/header.php";
 				<th>Deck</th>
 			</tr>
 			<?php while ($participant = $participants->fetch()): ?>
-			<tr <?= $game['winning_player'] == $participant['player_id'] ? "class=\"winner\"" : "" ?>>
+			<tr class="<?= $game['winning_player'] == $participant['player id'] ? "winner" : "loser" ?>">
 				<td><?= $participant['turn_order'] + 1 ?></td>
-				<td><?= $participant['name'] ?></td>
-				<td><?= $participant['commander'] ?></td>
+				<td><a href="<?= $pages['viewplayer']['route'].$participant['player id']."/" ?>"><?= $participant['name'] ?></a></td>
+					<td><a href="<?= $pages['viewdeck']['route'].$participant['deck id']."/" ?>"><?=$participant['partner'] != "" ? $participant['commander']." // ".$participant['partner'] : $participant['commander'] ?></a></td>
 			</tr>
 			<?php endwhile; ?>
 		</table>
