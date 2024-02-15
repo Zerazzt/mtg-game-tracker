@@ -218,10 +218,38 @@ RIGHT JOIN (
 		GROUP BY `games`.`id`
 		HAVING COUNT(`games`.`id`) = player_count
 	) AS `all_restricted_games`
-	ON `game_participation`.`game_id` = `all_restrited_games`.`id`
+	ON `game_participation`.`game_id` = `all_restricted_games`.`id`
 	LEFT JOIN `players`
 	ON `game_participation`.`player_id` = `players`.`id`
 	GROUP BY `game_participation`.`player_id`
 ) AS `restricted_game_participation`
 ON `player_wins`.`id` = `restricted_game_participation`.`player_id`
 ORDER BY `win rate` DESC;
+
+CREATE PROCEDURE `PlayerHeadToHead` (IN `playerA` INT, IN `playerB` INT)
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+SELECT
+	`all_players`.*,
+	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
+	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win_rate`
+FROM `game_participation` AS `gpA`                          -- Get all games where "some" Player A played.
+INNER JOIN `game_participation` AS `gpB`                    -- And all games where "some" Player B played.
+ON 	`gpA`.`game_id` = `gpB`.`game_id` AND                   	-- But only those A/B games that relate to the same game...
+	`gpA`.`player_id` = `playerA` AND                       	-- ...and where "some Player A" is *our* Player A;
+	`gpB`.`player_id` = `playerB`                           	-- ...and where "some Player B" is *our* Player B.
+LEFT JOIN `game_participation` AS `gp`                      -- Now, get all the other participation info...
+ON	`gp`.`game_id` = `gpA`.`game_id`                         	-- ...but only if it relates to those games.
+LEFT JOIN `players` AS `all_players`                        -- Then, go and grab the information for all the players...
+ON	`all_players`.`id` = `gp`.`player_id`                    	-- ...but only if they participated in the list of games.
+LEFT JOIN `games` AS `won_games`                            -- Next, Grab all of the games...
+ON	`won_games`.`id` = `gp`.`game_id` AND                   	-- ...that are part of the original list...
+	`won_games`.`winning_player` = `all_players`.`id`       	-- ...and that this player has won.
+LEFT JOIN `games` AS `lost_games`                           -- Lastly, grab all of the games...
+ON	`lost_games`.`id` = `gp`.`game_id` AND                  	-- ...that are part of the original list...
+	`lost_games`.`winning_player` <> `all_players`.`id`     	-- ... and that this player did not win.
+GROUP BY `all_players`.`id`                                 -- Group by player to allow us to count.
+HAVING `wins` > 0 OR `losses` > 0                           -- Eliminate those that weren't involved at all.
+ORDER BY `win_rate` DESC;                                   -- Sort by win percentage.
