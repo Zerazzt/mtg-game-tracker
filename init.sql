@@ -234,7 +234,7 @@ SELECT
 	`all_players`.*,
 	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
 	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
-	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win_rate`
+	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
 FROM `game_participation` AS `gpA`                          -- Get all games where "some" Player A played.
 INNER JOIN `game_participation` AS `gpB`                    -- And all games where "some" Player B played.
 ON 	`gpA`.`game_id` = `gpB`.`game_id` AND                   	-- But only those A/B games that relate to the same game...
@@ -252,4 +252,4 @@ ON	`lost_games`.`id` = `gp`.`game_id` AND                  	-- ...that are part 
 	`lost_games`.`winning_player` <> `all_players`.`id`     	-- ... and that this player did not win.
 GROUP BY `all_players`.`id`                                 -- Group by player to allow us to count.
 HAVING `wins` > 0 OR `losses` > 0                           -- Eliminate those that weren't involved at all.
-ORDER BY `win_rate` DESC;                                   -- Sort by win percentage.
+ORDER BY `win rate` DESC;                                   -- Sort by win percentage.
