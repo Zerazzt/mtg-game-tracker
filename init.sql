@@ -253,3 +253,31 @@ ON	`lost_games`.`id` = `gp`.`game_id` AND                  	-- ...that are part 
 GROUP BY `all_players`.`id`                                 -- Group by player to allow us to count.
 HAVING `wins` > 0 OR `losses` > 0                           -- Eliminate those that weren't involved at all.
 ORDER BY `win rate` DESC;                                   -- Sort by win percentage.
+
+CREATE PROCEDURE `DeckHeadToHead` (IN `deckA` INT, IN `deckB` INT)
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+SELECT
+	`all_decks`.*,
+	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
+	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
+FROM `game_participation` AS `gpA`
+INNER JOIN `game_participation` AS `gpB`
+ON 	`gpA`.`game_id` = `gpB`.`game_id` AND
+	`gpA`.`deck_id` = `deckA` AND
+	`gpB`.`deck_id` = `deckB`
+LEFT JOIN `game_participation` AS `gp`
+ON	`gp`.`game_id` = `gpA`.`game_id`
+LEFT JOIN `decks` AS `all_decks`
+ON	`all_decks`.`id` = `gp`.`deck_id`
+LEFT JOIN `games` AS `won_games`
+ON	`won_games`.`id` = `gp`.`game_id` AND
+	`won_games`.`winning_deck` = `all_decks`.`id`
+LEFT JOIN `games` AS `lost_games`
+ON	`lost_games`.`id` = `gp`.`game_id` AND
+	`lost_games`.`winning_deck` <> `all_decks`.`id`
+GROUP BY `all_decks`.`id`
+HAVING `wins` > 0 OR `losses` > 0
+ORDER BY `win rate` DESC;

@@ -28,6 +28,13 @@ $pages = [
 		"logged_in_nav" => true,
 		"logged_out_nav" => true,
 	],
+	"comparedecks" => [
+		"route" => "/compare/decks/",
+		"title" => "Compare Decks",
+		"require_logged_in" => false,
+		"logged_in_nav" => true,
+		"logged_out_nav" => true,
+	],
 	"login" => [
 		"route" => "/login/",
 		"title" => "Login",

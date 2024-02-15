@@ -1,19 +1,17 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 require_once "php/includes/start.php";
 
 $id1 = $_POST['player1'] ?? null;
 $id2 = $_POST['player2'] ?? null;
 
 if (isset($id1) && isset($id2)) {
-	header("location:".$pages["compareplayers"]["route"]."$id1/$id2/");
+	header("location:".$pages['compareplayers']['route']."$id1/$id2/");
 	die();
 }
 
 $pdo = connectDB();
 
-$playersQuery = "SELECT id, name FROM `players`";
+$playersQuery = "SELECT `id`, `name` FROM `players`";
 $playersStmt = $pdo->prepare($playersQuery);
 $playersStmt->execute();
 
@@ -93,7 +91,7 @@ require_once "php/includes/header.php";
 			</tr>
 			<?php foreach ($matchup as $r):?>
 			<tr>
-				<td><?= $r['name'] ?></td>
+				<td><a href="<?= $pages['viewplayer']['route'].$r['id']."/" ?>"><?= $r['name'] ?></a></td>
 				<td><?= $r['wins'] ?></td>
 				<td><?= $r['losses'] ?></td>
 				<td><?= $r['win rate'] ?></td>
