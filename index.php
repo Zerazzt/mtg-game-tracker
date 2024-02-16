@@ -9,11 +9,11 @@ $playerQuery = "SELECT * FROM `player_win_rates`";
 $players = $pdo->prepare($playerQuery);
 $players->execute();
 
-$deckQuery = "SELECT * FROM `deck_win_rates`";
+$deckQuery = "SELECT `decks`.`id`, `players`.`id` AS `player id`, `players`.`name`, `decks`.`commander`, `decks`.`partner`, `deck_win_rates`.`wins`, `deck_win_rates`.`losses`, `deck_win_rates`.`win rate` FROM `decks` LEFT JOIN `deck_win_rates` ON `decks`.`id` = `deck_win_rates`.`id` LEFT JOIN `players` ON `decks`.`owner` = `players`.`id` ORDER BY `win rate` DESC";
 $decks = $pdo->prepare($deckQuery);
 $decks->execute();
 
-$gamesQuery = "SELECT `games`.`id`, `games`.`date`, `players`.`name`, `decks`.`commander` FROM `games` LEFT JOIN `players` on `games`.`winning_player` = `players`.`id` LEFT JOIN `decks` on `games`.`winning_deck` = `decks`.`id` ORDER BY id DESC LIMIT 25";
+$gamesQuery = "SELECT `games`.`id`, `games`.`date`, `players`.`id` AS `player id`, `players`.`name`, `decks`.`id` AS `deck id`, `decks`.`commander`, `decks`.`partner` FROM `games` LEFT JOIN `players` on `games`.`winning_player` = `players`.`id` LEFT JOIN `decks` on `games`.`winning_deck` = `decks`.`id` ORDER BY id DESC LIMIT 25";
 $games = $pdo->prepare($gamesQuery);
 $games->execute();
 
@@ -34,7 +34,7 @@ require_once "php/includes/header.php";
 			</tr>
 			<?php while ($player = $players->fetch()): ?>
 			<tr>
-				<td><?= $player['name'] ?></td>
+				<td><a href="<?= $pages['viewplayer']['route'].$player['id']."/" ?>"><?= $player['name'] ?></a></td>
 				<td><?= $player['wins'] ?></td>
 				<td><?= $player['losses'] ?></td>
 				<td><?= $player['win rate'] ?></td>
@@ -45,17 +45,15 @@ require_once "php/includes/header.php";
 		<table id="deckWinRates">
 			<tr>
 				<th>Owner</th>
-				<th>Commander</th>
-				<th>Partner</th>
+				<th>Deck</th>
 				<th>Wins</th>
 				<th>Losses</th>
 				<th>Win Rate</th>
 			</tr>
 			<?php while ($deck = $decks->fetch()): ?>
 			<tr>
-				<td><?= $deck['name'] ?></td>
-				<td><?= $deck['commander'] ?></td>
-				<td><?= $deck['partner'] ?></td>
+				<td><a href="<?= $pages['viewplayer']['route'].$deck['player id']."/" ?>"><?= $deck['name'] ?></a></td>
+				<td><a href="<?= $pages['viewdeck']['route'].$deck['id']."/"?>"><?= $deck['partner'] != "" ? $deck['commander']." // ".$deck['partner'] : $deck['commander'] ?></a></td>
 				<td><?= $deck['wins'] ?></td>
 				<td><?= $deck['losses'] ?></td>
 				<td><?= $deck['win rate'] ?></td>
@@ -74,8 +72,8 @@ require_once "php/includes/header.php";
 			<tr>
 				<td><a href="<?= $pages['viewgame']['route'].$game['id']."/"?>"><?= $game['id'] ?></a></td>
 				<td><?= $game['date'] ?></td>
-				<td><?= $game['name'] ?></td>
-				<td><?= $game['commander'] ?></td>
+				<td><a href="<?= $pages['viewplayer']['route'].$game['player id']."/" ?>"><?= $game['name'] ?></a></td>
+				<td><a href="<?= $pages['viewdeck']['route'].$game['deck id']."/" ?>"><?= $game['partner'] != "" ? $game['commander']." // ".$game['partner'] : $game['commander'] ?></a></td>
 			</tr>
 			<?php endwhile; ?>
 		</table>
