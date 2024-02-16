@@ -18,7 +18,7 @@ CREATE TABLE `decks` (
 
 CREATE TABLE `games` (
 	`id` int NOT NULL AUTO_INCREMENT,
-	`date` datetime NOT NULL,
+	`date` date NOT NULL,
 	`winning_deck` int NOT NULL,
 	`winning_player` int NOT NULL,
 	PRIMARY KEY (id),
