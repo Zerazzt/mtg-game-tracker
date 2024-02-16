@@ -10,7 +10,7 @@ $deck = $pdo->prepare($deckQuery);
 $deck->execute([$id]);
 $deckData = $deck->fetch();
 
-$gamesQuery = "SELECT `games`.`id` AS `id`, `games`.`date`, `players`.`id` AS `player id`, `players`.`name`, `games`.`winning_deck` FROM `game_participation` LEFT JOIN `games` ON `games`.`id` = `game_participation`.`game_id` LEFT JOIN `players` on `game_participation`.`player_id` = `players`.`id` WHERE `game_participation`.`deck_id` = ? ORDER BY `games`.`date` DESC";
+$gamesQuery = "SELECT `games`.`id` AS `id`, `games`.`date`, `players`.`id` AS `player id`, `players`.`name`, `games`.`winning_deck` FROM `game_participation` LEFT JOIN `games` ON `games`.`id` = `game_participation`.`game_id` LEFT JOIN `players` on `game_participation`.`player_id` = `players`.`id` WHERE `game_participation`.`deck_id` = ? ORDER BY `games`.`date` DESC, `games`.`id` DESC";
 $games = $pdo->prepare($gamesQuery);
 $games->execute([$id]);
 
