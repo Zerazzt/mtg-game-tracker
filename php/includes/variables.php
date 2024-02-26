@@ -14,6 +14,13 @@ $pages = [
 		"logged_in_nav" => true,
 		"logged_out_nav" => false,
 	],
+	"manageplayers" => [
+		"route" => "/manage/players/",
+		"title" => "Manage Players",
+		"require_logged_in" => true,
+		"logged_in_nav" => true,
+		"logged_out_nav" => false,
+	],
 	"comparedecks" => [
 		"route" => "/compare/decks/",
 		"title" => "Compare Decks",

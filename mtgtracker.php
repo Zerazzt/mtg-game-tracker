@@ -42,7 +42,7 @@ if (isset($_POST["addUser"])) {
 	}
 	if (count($errors) === 0) {
 		$pdo   = connectDB();
-		$query = "INSERT INTO players (username, name) VALUES (?, ?);";
+		$query = "INSERT INTO players (username, name, priority) VALUES (?, ?, 1);";
 		$stmt  = $pdo->prepare($query);
 		$stmt->execute([
 			$username,

@@ -3,7 +3,7 @@ require_once "../includes/library.php";
 
 $pdo = connectDB();
 
-$query = "SELECT id, name FROM players";
+$query = "SELECT id, name FROM players WHERE `priority` > 0 ORDER BY `priority` DESC, `id` ASC";
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 
