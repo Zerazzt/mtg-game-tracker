@@ -2,7 +2,7 @@ CREATE TABLE `players` (
 	`id` int NOT NULL AUTO_INCREMENT,
 	`username` varchar(64) NOT NULL,
 	`name` varchar(64) NOT NULL,
-	`active` TINYINT(1),
+	`priority` INT,
 	PRIMARY KEY (id)
 );
 
