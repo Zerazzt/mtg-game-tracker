@@ -1,33 +1,4 @@
 <?php
-
-/*
-	EXPORTS
-		FUNCTIONS
-			connectDB:
-				PARAMATERS:
-					none
-				RETURNS:
-					a PDO object which is connected to the underlying database
-			
-			getPlayerID:
-				PARAMATERS:
-					$username: the username of the player
-				RETURNS:
-					the id of the player
-			
-			getDeckID:
-				PARAMETERS:
-					$commander
-*/
-
-
-/*
- * EXPORTS
- *     FUNCTIONS
- *         connectDB:
- * 
- */
-
 $direx = explode('/', getcwd());
 define('DOCROOT', "/$direx[1]/$direx[2]/");
 define('WEBROOT', "/$direx[1]/$direx[2]/$direx[3]/");
