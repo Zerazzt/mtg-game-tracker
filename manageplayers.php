@@ -31,7 +31,7 @@ require_once "php/includes/header.php";
 	<div class="middle">
 		<form method="post" class="user container">
 			<?php while ($player = $players->fetch()): ?>
-					<label><?= $player['name'] ?></label>
+					<label><a href="<?= $pages['viewplayer']['route'].$player['id']."/" ?>"><?= $player['name'] ?></a></label>
 					<input name="priorities[<?= $player['id'] ?>]" type="number" min="0" id="<?= $player['id'] ?>" value="<?= $player['priority'] ?>">
 			<?php endwhile; ?>
 			<button type="submit" name="update">Update</button>
