@@ -42,7 +42,7 @@ require_once "php/includes/header.php";
 					<th>Partner</th>
 					<th>Wins</th>
 					<th>Losses</th>
-					<th>Win Rate</th>
+					<th>Win Rate / %</th>
 				</tr>
 				<?php foreach($deckData as $deck): ?>
 				<tr>

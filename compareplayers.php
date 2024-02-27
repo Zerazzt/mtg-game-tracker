@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once "php/includes/start.php";
 
 $id1 = $_POST['player1'] ?? null;
@@ -47,7 +49,7 @@ if (isset($id1) && isset($id2)) {
 	
 	$results->closeCursor();
 
-	$gamesQuery = "SELECT `id` FROM `games` WHERE `games`.`id` IN (SELECT `game_id` FROM `game_participation` WHERE `player_id` = ? INTERSECT SELECT `game_id` FROM `game_participation` WHERE `player_id` = ?) ORDER BY id ASC";
+	$gamesQuery = "SELECT `games`.`id`, `games`.`date`, `players`.`name`, `decks`.`commander`, `decks`.`partner` FROM `games` LEFT JOIN `players` ON `games`.`winning_player` = `players`.`id` LEFT JOIN `decks` ON `games`.`winning_deck` = `decks`.`id` LEFT JOIN `game_participation` AS `gpA` ON `games`.`id` = `gpA`.`game_id` LEFT JOIN `game_participation` AS `gpB` ON `games`.`id` = `gpB`.`game_id` WHERE `gpA`.`player_id` = ? AND `gpB`.`player_id` = ? ORDER BY `games`.`id` DESC";
 	$games = $pdo->prepare($gamesQuery);
 	$games->execute([$id1, $id2]);
 }
@@ -87,7 +89,7 @@ require_once "php/includes/header.php";
 				<th>Name</th>
 				<th>Wins</th>
 				<th>Losses</th>
-				<th>Win Rate</th>
+				<th>Win Rate / %</th>
 			</tr>
 			<?php foreach ($matchup as $r):?>
 			<tr>
@@ -99,9 +101,22 @@ require_once "php/includes/header.php";
 			<?php endforeach; ?>
 		</table>
 
-		<?php foreach ($games as $game): ?>
-		<a href="<?= $pages['viewgame']['route'].$game['id']."/" ?>">Game <?= $game['id'] ?></a>
-		<?php endforeach; ?>
+		<table>
+			<tr>
+				<th>Game #</th>
+				<th>Date</th>
+				<th>Winning Player</th>
+				<th>Winning Deck</th>
+			</tr>
+			<?php foreach ($games as $game): ?>
+			<tr>
+				<td><a href="<?= $pages['viewgame']['route'].$game['id']."/" ?>">Game <?= $game['id'] ?></a></td>
+				<td><?= $game['date'] ?></td>
+				<td><?= $game['name'] ?></td>
+				<td><?= $game['partner'] != "" ? $game['commander']." // ".$game['partner'] : $game['commander'] ?></td>
+			</tr>
+			<?php endforeach; ?>
+		</table>
 	</div>
 </main>
 <?php require "php/includes/footer.php"; ?>

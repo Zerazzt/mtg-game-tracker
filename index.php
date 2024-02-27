@@ -48,7 +48,7 @@ require_once "php/includes/header.php";
 				<th>Owner</th>
 				<th>Wins</th>
 				<th>Losses</th>
-				<th>Win Rate</th>
+				<th>Win Rate / %</th>
 			</tr>
 			<?php while ($deck = $decks->fetch()): ?>
 			<tr>
