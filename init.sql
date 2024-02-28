@@ -51,78 +51,48 @@ CREATE TABLE `game_tags` (
 
 CREATE VIEW `player_win_rates` AS
 SELECT
-	`gp`.`id`,
-	`gp`.`name`,
-	COALESCE(`player_wins`.`wins`, 0) AS `wins`,
-	`gp`.`count` - COALESCE(`player_wins`.`wins`, 0) AS `losses`,
-	100 * COALESCE(`player_wins`.`wins`, 0) / `gp`.`count` AS `win rate`
-FROM (
-	SELECT
-		`players`.`id` AS `id`,
-		`players`.`name`,
-		COUNT(`games`.`winning_player`) AS `wins`
-	FROM `players`
-	RIGHT JOIN `games`
-	ON `players`.`id` = `games`.`winning_player`
-	GROUP BY `games`.`winning_player`
-) AS `player_wins`
-RIGHT JOIN (
-	SELECT
-		`players`.`id` AS `id`,
-		`players`.`name` AS `name`,
-		COUNT(`game_participation`.`player_id`) AS `count`
-	FROM `players`
-	RIGHT JOIN `game_participation`
-	ON `players`.`id` = `game_participation`.`player_id`
-	GROUP BY `game_participation`.`player_id`
-) AS `gp`
-ON `player_wins`.`id` = `gp`.`id`
-ORDER BY `win rate` DESC;
+	`players`.`id`,
+	`players`.`name`,
+	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
+	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
+FROM `players`
+LEFT JOIN `game_participation` AS `played_games`
+ON	`players`.`id` = `played_games`.`player_id`
+LEFT JOIN `games` AS `won_games`
+ON	`played_games`.`game_id` = `won_games`.`id` AND
+	`won_games`.`winning_player` = `players`.`id`
+LEFT JOIN `games` AS `lost_games`
+ON	`played_games`.`game_id` = `lost_games`.`id` AND
+	`lost_games`.`winning_player` <> `players`.`id`
+GROUP BY `players`.`id`
+HAVING `wins` > 0 OR `losses` > 0
+ORDER BY `win rate` DESC, `wins` + `losses` ASC;
 
 CREATE VIEW `deck_win_rates` AS
 SELECT
+	`decks`.`id`,
+	`decks`.`commander`,
+	`decks`.`partner`,
+	`decks`.`owner`,
 	`players`.`name`,
-	`data`.`id`,
-	`data`.`commander`,
-	`data`.`partner`,
-	`data`.`wins`,
-	`data`.`losses`,
-	`data`.`win rate`
-FROM (
-	SELECT
-		`gp`.`id`,
-		`gp`.`owner`,
-		`gp`.`commander`,
-		`gp`.`partner`,
-		COALESCE(`deck_wins`.`wins`, 0) AS `wins`,
-		`gp`.`count` - COALESCE(`deck_wins`.`wins`, 0) AS `losses`,
-		100 * COALESCE(`deck_wins`.`wins`, 0) / `gp`.`count` AS `win rate`
-	FROM (
-		SELECT
-			`decks`.`id` AS `id`,
-			COUNT(`games`.`winning_deck`) AS `wins`
-		FROM `decks`
-		RIGHT JOIN `games`
-		ON `decks`.`id` = `games`.`winning_deck`
-		GROUP BY `games`.`winning_deck`
-	) AS `deck_wins`
-	RIGHT JOIN (
-		SELECT
-			`decks`.`id` AS `id`,
-			`decks`.`owner` AS `owner`,
-			`decks`.`commander` AS `commander`,
-			`decks`.`partner` AS `partner`,
-			COUNT(`game_participation`.`deck_id`) AS `count`
-		FROM `decks`
-		RIGHT JOIN `game_participation`
-		ON `decks`.`id` = `game_participation`.`deck_id`
-		GROUP BY `game_participation`.`deck_id`
-	) AS `gp`
-	ON `deck_wins`.`id` = `gp`.`id`
-) AS `data`
+	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
+	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
+FROM `decks`
 LEFT JOIN `players`
-ON `data`.`owner` = `players`.`id`
-ORDER BY `win rate` DESC;
+ON `decks`.`owner` = `players`.`id`
+LEFT JOIN `game_participation` AS `played_games`
+ON `decks`.`id` = `played_games`.`deck_id`
+LEFT JOIN `games` AS `won_games`
+ON	`played_games`.`game_id` = `won_games`.`id` AND
+	`won_games`.`winning_deck` = `decks`.`id`
+LEFT JOIN `games` AS `lost_games`
+ON `played_games`.`game_id` = `lost_games`.`id` AND
+	`lost_games`.`winning_deck` <> `decks`.`id`
+GROUP BY `decks`.`id`
+HAVING `wins` > 0 OR `losses` > 0
+ORDER BY `win rate` DESC, `wins` + `losses` ASC;
 
 CREATE PROCEDURE `RestrictedDeckWinRate`(IN `player_count` INT)
 NOT DETERMINISTIC

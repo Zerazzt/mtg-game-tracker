@@ -9,7 +9,9 @@ $playerQuery = "SELECT * FROM `player_win_rates`";
 $players = $pdo->prepare($playerQuery);
 $players->execute();
 
-$deckQuery = "SELECT `decks`.`id`, `players`.`id` AS `player id`, `players`.`name`, `decks`.`commander`, `decks`.`partner`, `deck_win_rates`.`wins`, `deck_win_rates`.`losses`, `deck_win_rates`.`win rate` FROM `decks` LEFT JOIN `deck_win_rates` ON `decks`.`id` = `deck_win_rates`.`id` LEFT JOIN `players` ON `decks`.`owner` = `players`.`id` WHERE `deck_win_rates`.`wins` + `deck_win_rates`.`losses` > 5 ORDER BY `win rate` DESC";
+$deckQuery = "SELECT * FROM `deck_win_rates`";
+
+// $deckQuery = "SELECT `decks`.`id`, `players`.`id` AS `player id`, `players`.`name`, `decks`.`commander`, `decks`.`partner`, `deck_win_rates`.`wins`, `deck_win_rates`.`losses`, `deck_win_rates`.`win rate` FROM `decks` LEFT JOIN `deck_win_rates` ON `decks`.`id` = `deck_win_rates`.`id` LEFT JOIN `players` ON `decks`.`owner` = `players`.`id` WHERE `deck_win_rates`.`wins` + `deck_win_rates`.`losses` > 5 ORDER BY `win rate` DESC";
 $decks = $pdo->prepare($deckQuery);
 $decks->execute();
 
@@ -53,7 +55,7 @@ require_once "php/includes/header.php";
 			<?php while ($deck = $decks->fetch()): ?>
 			<tr>
 				<td><a href="<?= $pages['viewdeck']['route'].$deck['id']."/"?>"><?= $deck['partner'] != "" ? $deck['commander']." // ".$deck['partner'] : $deck['commander'] ?></a></td>
-				<td><a href="<?= $pages['viewplayer']['route'].$deck['player id']."/" ?>"><?= $deck['name'] ?></a></td>
+				<td><a href="<?= $pages['viewplayer']['route'].$deck['owner']."/" ?>"><?= $deck['name'] ?></a></td>
 				<td><?= $deck['wins'] ?></td>
 				<td><?= $deck['losses'] ?></td>
 				<td><?= $deck['win rate'] ?></td>
