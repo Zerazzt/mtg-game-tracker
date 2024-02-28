@@ -9,7 +9,7 @@ $pages = [
 	],
 	"mtgtracker" => [
 		"route" => "/tracker/",
-		"title" => "Add Results",
+		"title" => "Add Data",
 		"require_logged_in" => true,
 		"logged_in_nav" => true,
 		"logged_out_nav" => false,
