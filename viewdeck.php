@@ -14,6 +14,29 @@ $gamesQuery = "SELECT `games`.`id` AS `id`, `games`.`date`, `players`.`id` AS `p
 $games = $pdo->prepare($gamesQuery);
 $games->execute([$id]);
 
+$playerResultsQuery = "SELECT
+	`all_players`.*,
+	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
+	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
+FROM `game_participation` AS `gpA`
+LEFT JOIN `game_participation` AS `gp`
+ON `gp`.`game_id` = `gpA`.`game_id` AND
+   `gp`.`deck_id` = ?
+LEFT JOIN `players` AS `all_players`
+ON `all_players`.`id` = `gp`.`player_id`
+LEFT JOIN `games` AS `won_games`
+ON `won_games`.`id` = `gp`.`game_id` AND
+   `won_games`.`winning_player` = `all_players`.`id`
+LEFT JOIN `games` AS `lost_games`
+ON `lost_games`.`id` = `gp`.`game_id` AND
+   `lost_games`.`winning_player` <> `all_players`.`id`
+GROUP BY `all_players`.`id`
+HAVING `wins` > 0 OR `losses` > 0
+ORDER BY `win rate` DESC;";
+$playerResults = $pdo->prepare($playerResultsQuery);
+$playerResults->execute([$id]);
+
 require_once "php/includes/head.php";
 ?>
 <?php
@@ -30,7 +53,22 @@ require_once "php/includes/header.php";
 	<div class="middle">
 		<section>
 			<h2>Played By</h2>
-			<span>Under development.</span>
+			<table>
+				<tr>
+					<th>Player</th>
+					<th>Wins</th>
+					<th>Losses</th>
+					<th>Win Rate / %</th>
+				</tr>
+				<?php foreach ($playerResults as $result): ?>
+				<tr>
+					<td><a href="<?= $pages['viewplayer']['route'].$result['id']."/" ?>"><?= $result['name'] ?></a></td>
+					<td><?= $result['wins'] ?></td>
+					<td><?= $result['losses'] ?></td>
+					<td><?= $result['win rate'] ?></td>
+				</tr>
+				<?php endforeach; ?>
+			</table>
 		</section>
 
 		<section>

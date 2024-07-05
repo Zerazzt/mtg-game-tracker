@@ -5,7 +5,7 @@ $pdo = connectDB();
 
 $id = $_GET['id'] ?? null;
 
-$decksQuery = "SELECT `decks`.`id`, `decks`.`commander`, `decks`.`partner`, `deck_win_rates`.`wins`, `deck_win_rates`.`losses`, `deck_win_rates`.`win rate` FROM `deck_win_rates` LEFT JOIN `decks` ON `deck_win_rates`.`id` = `decks`.`id` WHERE `decks`.`owner` = ? ORDER BY `deck_win_rates`.`win rate` DESC";
+$decksQuery = "SELECT `decks`.`id`, `decks`.`commander`, `decks`.`partner`, `decks`.`background`, `deck_win_rates`.`wins`, `deck_win_rates`.`losses`, `deck_win_rates`.`win rate` FROM `decks` LEFT JOIN `deck_win_rates` ON `deck_win_rates`.`id` = `decks`.`id` WHERE `decks`.`owner` = ? ORDER BY `deck_win_rates`.`win rate` DESC";
 $decks = $pdo->prepare($decksQuery);
 $decks->execute([$id]);
 $deckData = $decks->fetchAll();
@@ -19,6 +19,29 @@ $playerData = $player->fetch();
 $gamesQuery = "SELECT `games`.`id`, `games`.`date`, `decks`.`id` AS `deck id`, `decks`.`commander`, `decks`.`partner`, `games`.`winning_player` FROM `game_participation` LEFT JOIN `games` ON `games`.`id` = `game_participation`.`game_id` LEFT JOIN `decks` ON `game_participation`.`deck_id` = `decks`.`id` WHERE `game_participation`.`player_id` = ? ORDER BY `games`.`date` DESC, `games`.`id` DESC";
 $games = $pdo->prepare($gamesQuery);
 $games->execute([$id]);
+
+$deckResultsQuery = "SELECT
+	`all_decks`.*,
+	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
+	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
+FROM `game_participation` AS `gpA`
+LEFT JOIN `game_participation` AS `gp`
+ON `gp`.`game_id` = `gpA`.`game_id` AND
+   `gp`.`player_id` = ?
+LEFT JOIN `decks` AS `all_decks`
+ON `all_decks`.`id` = `gp`.`deck_id`
+LEFT JOIN `games` AS `won_games`
+ON `won_games`.`id` = `gp`.`game_id` AND
+   `won_games`.`winning_deck` = `all_decks`.`id`
+LEFT JOIN `games` AS `lost_games`
+ON `lost_games`.`id` = `gp`.`game_id` AND
+   `lost_games`.`winning_deck` <> `all_decks`.`id`
+GROUP BY `all_decks`.`id`
+HAVING `wins` > 0 OR `losses` > 0
+ORDER BY `win rate` DESC;";
+$deckResults = $pdo->prepare($deckResultsQuery);
+$deckResults->execute([$id]);
 
 require_once "php/includes/head.php";
 ?>
@@ -39,7 +62,7 @@ require_once "php/includes/header.php";
 			<table>
 				<tr>
 					<th>Commander</th>
-					<th>Partner</th>
+					<th>Partner or Background</th>
 					<th>Wins</th>
 					<th>Losses</th>
 					<th>Win Rate / %</th>
@@ -47,7 +70,7 @@ require_once "php/includes/header.php";
 				<?php foreach($deckData as $deck): ?>
 				<tr>
 					<td><a href="<?= $pages['viewdeck']['route'].$deck['id']."/" ?>"><?= $deck['commander'] ?></a></td>
-					<td><?= $deck['partner'] ?></td>
+					<td><?= $deck['partner'].$deck['background'] ?></td>
 					<td><?= $deck['wins'] ?></td>
 					<td><?= $deck['losses'] ?></td>
 					<td><?= $deck['win rate'] ?></td>
@@ -58,7 +81,24 @@ require_once "php/includes/header.php";
 
 		<section>
 			<h2>Played Decks</h2>
-			<span>Under development.</span>
+			<table>
+				<tr>
+					<th>Commander</th>
+					<th>Partner or Background</th>
+					<th>Wins</th>
+					<th>Losses</th>
+					<th>Win Rate / %</th>
+				</tr>
+				<?php foreach($deckResults as $result): ?>
+				<tr>
+					<td><a href="<?= $pages['viewdeck']['route'].$result['id']."/" ?>"><?= $result['commander'] ?></a></td>
+					<td><?= $result['partner'].$result['background'] ?></td>
+					<td><?= $result['wins'] ?></td>
+					<td><?= $result['losses'] ?></td>
+					<td><?= $result['win rate'] ?></td>
+				</tr>
+				<?php endforeach; ?>
+			</table>
 		</section>
 
 		<section>
