@@ -36,5 +36,7 @@ require_once "php/includes/header.php";
 			<?php endwhile; ?>
 		</table>
 		<span>Played on: <?= $game['date'] ?></span>
+		<a href="<?= $pages['viewgame']['route'].($id - 1)."/" ?>">Prev</a>
+		<a href="<?= $pages['viewgame']['route'].($id + 1)."/" ?>">Next</a>
 	</div>
 </main>
