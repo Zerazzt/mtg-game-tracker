@@ -8,14 +8,10 @@ $errors = array();
 
 if (isset($_POST['submit'])) {
 	$pdo   = connectDB();
-
-	echo "a";
+	
 	$query = "SELECT id, password FROM admin WHERE email = ?";
-	echo "b";
 	$stmt  = $pdo->prepare($query);
-	echo "c";
 	$stmt->execute([$email]);
-	echo "d";
 
 	$user = $stmt->fetch();
 	var_dump($user);
