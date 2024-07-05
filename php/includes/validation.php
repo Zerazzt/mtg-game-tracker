@@ -62,6 +62,14 @@ function validateCompanion($companion) {
 	return $error;
 }
 
+function validateBackground($background) {
+	$error = null;
+	if (strlen($background) > 64) {
+		$error = "invalid";
+	}
+	return $error;
+}
+
 function validateEmail($email, $email_confirm) {
 	$pdo = connectDB();
 	$error = null;
