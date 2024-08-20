@@ -1,13 +1,45 @@
 <?php
 require_once "php/includes/start.php";
 
-$pdo = connectDB();
-
 $id = $_GET['id'] ?? null;
 
-$decksQuery = "SELECT `decks`.`id`, `decks`.`commander`, `decks`.`partner`, `decks`.`background`, `deck_win_rates`.`wins`, `deck_win_rates`.`losses`, `deck_win_rates`.`win rate` FROM `decks` LEFT JOIN `deck_win_rates` ON `deck_win_rates`.`id` = `decks`.`id` WHERE `decks`.`owner` = ? ORDER BY `deck_win_rates`.`win rate` DESC";
+$decksQuery = "SELECT
+	`decks`.`id`,
+	`decks`.`commander`,
+	`decks`.`partner`,
+	`decks`.`background`,
+	`decks`.`owner`,
+	`players`.`name`,
+	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
+	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
+FROM `decks`
+LEFT JOIN `players`
+ON `decks`.`owner` = `players`.`id`
+LEFT JOIN `game_participation` AS `played_games`
+ON `decks`.`id` = `played_games`.`deck_id`
+LEFT JOIN `games` AS `won_games`
+ON `played_games`.`game_id` = `won_games`.`id` AND
+	`won_games`.`winning_deck` = `decks`.`id`
+LEFT JOIN `games` AS `lost_games`
+ON `played_games`.`game_id` = `lost_games`.`id` AND
+	`lost_games`.`winning_deck` <> `decks`.`id`
+WHERE
+	`decks`.`owner` = ? AND (
+	(`won_games`.`date` >= ? AND
+	`won_games`.`date` <= ?) OR
+	(`lost_games`.`date` >= ? AND
+	`lost_games`.`date` <= ?))
+GROUP BY `decks`.`id`
+ORDER BY `win rate` DESC";
 $decks = $pdo->prepare($decksQuery);
-$decks->execute([$id]);
+$decks->execute([
+	$id,
+	$settings['start_date'],
+	$settings['end_date'],
+	$settings['start_date'],
+	$settings['end_date']
+]);
 $deckData = $decks->fetchAll();
 $decks->closeCursor();
 
@@ -21,7 +53,10 @@ $games = $pdo->prepare($gamesQuery);
 $games->execute([$id]);
 
 $deckResultsQuery = "SELECT
-	`all_decks`.*,
+	`all_decks`.`id`,
+	`all_decks`.`commander`,
+	`all_decks`.`partner`,
+	`all_decks`.`background`,
 	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
 	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
 	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
@@ -37,11 +72,22 @@ ON `won_games`.`id` = `gp`.`game_id` AND
 LEFT JOIN `games` AS `lost_games`
 ON `lost_games`.`id` = `gp`.`game_id` AND
    `lost_games`.`winning_deck` <> `all_decks`.`id`
+WHERE
+	(`won_games`.`date` >= ? AND
+	`won_games`.`date` <= ?) OR
+	(`lost_games`.`date` >= ? AND
+	`lost_games`.`date` <= ?)
 GROUP BY `all_decks`.`id`
 HAVING `wins` > 0 OR `losses` > 0
 ORDER BY `win rate` DESC;";
 $deckResults = $pdo->prepare($deckResultsQuery);
-$deckResults->execute([$id]);
+$deckResults->execute([
+	$id,
+	$settings['start_date'],
+	$settings['end_date'],
+	$settings['start_date'],
+	$settings['end_date']
+]);
 
 require_once "php/includes/head.php";
 ?>

@@ -11,12 +11,33 @@ $pages = [
 		"route" => "/tracker/",
 		"title" => "Add Data",
 		"require_logged_in" => true,
-		"logged_in_nav" => true,
+		"logged_in_nav" => false,
 		"logged_out_nav" => false,
 	],
-	"manageplayers" => [
-		"route" => "/manage/players/",
-		"title" => "Manage Players",
+	"adddeck" => [
+		"route" => "/add/deck/",
+		"title" => "Add Deck",
+		"require_logged_in" => true,
+		"logged_in_nav" => true,
+		"logged_out_nav" => false
+	],
+	"addgame" => [
+		"route" => "/add/game/",
+		"title" => "Add Game",
+		"require_logged_in" => true,
+		"logged_in_nav" => true,
+		"logged_out_nav" => false
+	],
+	"addplayer" => [
+		"route" => "/add/player/",
+		"title" => "Add Player",
+		"require_logged_in" => true,
+		"logged_in_nav" => true,
+		"logged_out_nav" => false
+	],
+	"settings" => [
+		"route" => "/settings/",
+		"title" => "Settings",
 		"require_logged_in" => true,
 		"logged_in_nav" => true,
 		"logged_out_nav" => false,

@@ -1,11 +1,22 @@
 <?php
 require_once "php/includes/start.php";
 
-$pdo = connectDB();
-
 $id = $_GET['id'] ?? null;
 
-$deckQuery = "SELECT `decks`.`id`, `decks`.`commander`, `decks`.`partner`, `deck_win_rates`.`wins`, `deck_win_rates`.`losses`, `deck_win_rates`.`win rate`, `players`.`id` AS `owner_id`, `players`.`name` FROM `decks` LEFT JOIN `deck_win_rates` ON `decks`.`id` = `deck_win_rates`.`id` LEFT JOIN `players` ON `decks`.`owner` = `players`.`id` WHERE `decks`.`id` = ?";
+$deckQuery = "SELECT
+	`decks`.`id`,
+	`decks`.`commander`,
+	`decks`.`partner`,
+	`deck_win_rates`.`wins`,
+	`deck_win_rates`.`losses`,
+	`deck_win_rates`.`win rate`,
+	`players`.`id` AS `owner_id`,
+	`players`.`name`
+FROM `decks`
+LEFT JOIN `deck_win_rates`
+ON `decks`.`id` = `deck_win_rates`.`id`
+LEFT JOIN `players` ON `decks`.`owner` = `players`.`id`
+WHERE `decks`.`id` = ?";
 $deck = $pdo->prepare($deckQuery);
 $deck->execute([$id]);
 $deckData = $deck->fetch();
@@ -15,7 +26,8 @@ $games = $pdo->prepare($gamesQuery);
 $games->execute([$id]);
 
 $playerResultsQuery = "SELECT
-	`all_players`.*,
+	`all_players`.`id`,
+	`all_players`.`name`,
 	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
 	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
 	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
@@ -31,11 +43,22 @@ ON `won_games`.`id` = `gp`.`game_id` AND
 LEFT JOIN `games` AS `lost_games`
 ON `lost_games`.`id` = `gp`.`game_id` AND
    `lost_games`.`winning_player` <> `all_players`.`id`
+WHERE
+	(`won_games`.`date` >= ? AND
+	`won_games`.`date` <= ?) OR
+	(`lost_games`.`date` >= ? AND
+	`lost_games`.`date` <= ?)
 GROUP BY `all_players`.`id`
 HAVING `wins` > 0 OR `losses` > 0
 ORDER BY `win rate` DESC;";
 $playerResults = $pdo->prepare($playerResultsQuery);
-$playerResults->execute([$id]);
+$playerResults->execute([
+	$id,
+	$settings['start_date'],
+	$settings['end_date'],
+	$settings['start_date'],
+	$settings['end_date']
+]);
 
 require_once "php/includes/head.php";
 ?>

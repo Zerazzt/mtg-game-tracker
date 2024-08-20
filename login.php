@@ -6,9 +6,7 @@ $password = $_POST['password'] ?? null;
 
 $errors = array();
 
-if (isset($_POST['submit'])) {
-	$pdo   = connectDB();
-	
+if (isset($_POST['submit'])) {	
 	$query = "SELECT id, password FROM admin WHERE email = ?";
 	$stmt  = $pdo->prepare($query);
 	$stmt->execute([$email]);

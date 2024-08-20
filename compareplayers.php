@@ -1,6 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 require_once "php/includes/start.php";
 
 $id1 = $_POST['player1'] ?? null;
@@ -11,9 +9,11 @@ if (isset($id1) && isset($id2)) {
 	die();
 }
 
-$pdo = connectDB();
-
-$playersQuery = "SELECT `id`, `name` FROM `players`";
+$playersQuery = "SELECT
+	`id`,
+	`name`
+FROM `players`
+WHERE `priority` > 0";
 $playersStmt = $pdo->prepare($playersQuery);
 $playersStmt->execute();
 
@@ -39,9 +39,44 @@ $matchup = array();
 $games = array();
 
 if (isset($id1) && isset($id2)) {
-	$query = "CALL `PlayerHeadToHead`(?, ?)";
+	$query = "SELECT
+	`all_players`.`id`,
+	`all_players`.`name`,
+	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
+	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
+FROM `game_participation` AS `gpA`
+INNER JOIN `game_participation` AS `gpB`
+ON 	`gpA`.`game_id` = `gpB`.`game_id` AND
+	`gpA`.`player_id` = ? AND
+	`gpB`.`player_id` = ?
+LEFT JOIN `game_participation` AS `gp`
+ON	`gp`.`game_id` = `gpA`.`game_id`
+LEFT JOIN `players` AS `all_players`
+ON	`all_players`.`id` = `gp`.`player_id`
+LEFT JOIN `games` AS `won_games`
+ON	`won_games`.`id` = `gp`.`game_id` AND
+	`won_games`.`winning_player` = `all_players`.`id`
+LEFT JOIN `games` AS `lost_games`
+ON	`lost_games`.`id` = `gp`.`game_id` AND
+	`lost_games`.`winning_player` <> `all_players`.`id`
+WHERE
+	(`won_games`.`date` >= ? AND
+	`won_games`.`date` <= ?) OR
+	(`lost_games`.`date` >= ? AND
+	`lost_games`.`date` <= ?)
+GROUP BY `all_players`.`id`
+HAVING `wins` > 0 OR `losses` > 0
+ORDER BY `win rate` DESC;";
 	$results = $pdo->prepare($query);
-	$results->execute([$id1, $id2]);
+	$results->execute([
+		$id1,
+		$id2,
+		$settings['start_date'],
+		$settings['end_date'],
+		$settings['start_date'],
+		$settings['end_date']
+	]);
 
 	foreach ($results as $r) {
 		$matchup[] = $r;
@@ -49,9 +84,29 @@ if (isset($id1) && isset($id2)) {
 	
 	$results->closeCursor();
 
-	$gamesQuery = "SELECT `games`.`id`, `games`.`date`, `players`.`name`, `decks`.`commander`, `decks`.`partner` FROM `games` LEFT JOIN `players` ON `games`.`winning_player` = `players`.`id` LEFT JOIN `decks` ON `games`.`winning_deck` = `decks`.`id` LEFT JOIN `game_participation` AS `gpA` ON `games`.`id` = `gpA`.`game_id` LEFT JOIN `game_participation` AS `gpB` ON `games`.`id` = `gpB`.`game_id` WHERE `gpA`.`player_id` = ? AND `gpB`.`player_id` = ? ORDER BY `games`.`id` DESC";
+	$gamesQuery = "SELECT
+	`games`.`id`,
+	`games`.`date`,
+	`players`.`name`,
+	`decks`.`commander`,
+	`decks`.`partner`
+FROM `games`
+LEFT JOIN `players`
+ON `games`.`winning_player` = `players`.`id`
+LEFT JOIN `decks`
+ON `games`.`winning_deck` = `decks`.`id`
+LEFT JOIN `game_participation` AS `gpA`
+ON `games`.`id` = `gpA`.`game_id`
+LEFT JOIN `game_participation` AS `gpB`
+ON `games`.`id` = `gpB`.`game_id`
+WHERE `gpA`.`player_id` = ? AND
+      `gpB`.`player_id` = ?
+ORDER BY `games`.`id` DESC";
 	$games = $pdo->prepare($gamesQuery);
-	$games->execute([$id1, $id2]);
+	$games->execute([
+		$id1,
+		$id2
+	]);
 }
 
 require_once "php/includes/head.php";

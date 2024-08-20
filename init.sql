@@ -1,3 +1,21 @@
+CREATE TABLE `admin` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`email` varchar(64) NOT NULL,
+	`password` text NOT NULL,
+	`token` text,
+	`token_expiry` int,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE `settings` (
+	`id` int NOT NULL AUTO_INCREMENT,
+	`start_date` date,
+	`end_date` date,
+	`minimum` int,
+	`display max` int
+	PRIMARY KEY (id)
+);
+
 CREATE TABLE `players` (
 	`id` int NOT NULL AUTO_INCREMENT,
 	`username` varchar(64) NOT NULL,
@@ -12,6 +30,7 @@ CREATE TABLE `decks` (
 	`commander` varchar(64) NOT NULL,
 	`partner` varchar(64) DEFAULT NULL,
 	`companion` varchar(64) DEFAULT NULL,
+	`background` varchar(64) DEFAULT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (owner) REFERENCES players(id)
 );
@@ -67,7 +86,7 @@ ON	`played_games`.`game_id` = `lost_games`.`id` AND
 	`lost_games`.`winning_player` <> `players`.`id`
 GROUP BY `players`.`id`
 HAVING `wins` > 0 OR `losses` > 0
-ORDER BY `win rate` DESC, `wins` + `losses` ASC;
+ORDER BY `win rate` DESC;
 
 CREATE VIEW `deck_win_rates` AS
 SELECT
@@ -92,7 +111,7 @@ ON `played_games`.`game_id` = `lost_games`.`id` AND
 	`lost_games`.`winning_deck` <> `decks`.`id`
 GROUP BY `decks`.`id`
 HAVING `wins` > 0 OR `losses` > 0
-ORDER BY `win rate` DESC, `wins` + `losses` ASC;
+ORDER BY `win rate` DESC;
 
 CREATE PROCEDURE `RestrictedDeckWinRate`(IN `player_count` INT)
 NOT DETERMINISTIC
@@ -106,7 +125,7 @@ SELECT
 	100 * COALESCE(`deck_wins`.`wins`, 0) / `restricted_game_participation`.`count` AS `win rate`
 FROM (
 	SELECT
-		`decks`.`id` AS `id`
+		`decks`.`id` AS `id`,
 		`decks`.`commander` AS `commander`,
 		COUNT(`restricted_games`.`winning_deck`) AS `wins`
 	FROM decks
@@ -175,7 +194,7 @@ FROM (
 ) AS `player_wins`
 RIGHT JOIN (
 	SELECT
-		`players`.`player_id`
+		`players`.`player_id`,
 		`players`.`name`,
 		COUNT(`game_participation`.`player_id`) AS `count`
 	FROM `game_participation`

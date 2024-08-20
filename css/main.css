@@ -124,7 +124,9 @@ select {
 	cursor:pointer;
 }
 
-.modal {
+.user,
+.deck,
+.game {
 	display:none;
 	border-radius:0.5rem;
 	background-color:rgba(0,0,0,0.3);
@@ -138,7 +140,7 @@ select {
 	display:grid;
 	grid-column-gap:1rem;
 	grid-row-gap:1rem;
-	margin:0 auto 0;
+	margin:0.5rem auto 0.5rem;
 }
 
 .user {
@@ -146,7 +148,11 @@ select {
 }
 
 .deck {
-	grid-template-columns:1fr auto auto;
+	grid-template-columns:1fr 1fr;
+}
+
+.deck div {
+	grid-template-columns: auto auto;
 }
 
 .game {

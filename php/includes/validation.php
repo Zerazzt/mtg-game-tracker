@@ -3,7 +3,7 @@ function validateUsername($username) {
 	$pdo = connectDB();
 	$error = null;
 
-	if (strlen($username) === 0 || strlen($username) > 64) {
+	if (strlen($username) === 0 || strlen(htmlentities($username)) > 64) {
 		$error = "invalid";
 	}
 	else {
@@ -20,7 +20,7 @@ function validateUsername($username) {
 
 function validateName($name) {
 	$error = null;
-	if (strlen($name) === 0 || strlen($name) > 64) {
+	if (strlen($name) === 0 || strlen(htmlentities($name)) > 64) {
 		$error = "invalid";
 	}
 	return $error;
@@ -40,7 +40,7 @@ function validateOwner($owner) {
 
 function validateCommander($commander) {
 	$error = null;
-	if (strlen($commander) === 0 || strlen($commander) > 64) {
+	if (strlen($commander) === 0 || strlen(htmlentities($commander)) > 64) {
 		$error = "invalid";
 	}
 	return $error;
@@ -48,7 +48,7 @@ function validateCommander($commander) {
 
 function validatePartner($partner) {
 	$error = null;
-	if (strlen($partner) > 64) {
+	if (strlen(htmlentities($partner)) > 64) {
 		$error = "invalid";
 	}
 	return $error;
@@ -56,7 +56,7 @@ function validatePartner($partner) {
 
 function validateCompanion($companion) {
 	$error = null;
-	if (strlen($companion) > 64) {
+	if (strlen(htmlentities($companion)) > 64) {
 		$error = "invalid";
 	}
 	return $error;
@@ -64,7 +64,7 @@ function validateCompanion($companion) {
 
 function validateBackground($background) {
 	$error = null;
-	if (strlen($background) > 64) {
+	if (strlen(htmlentities($background)) > 64) {
 		$error = "invalid";
 	}
 	return $error;

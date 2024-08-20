@@ -14,6 +14,10 @@
 		<label for="partner">Partner:</label>
 		<input type="text" name="partner" id="partner">
 	</div>
+	<div>
+		<label for="background">Background:</label>
+		<input type="text" name="background" id="background">
+	</div>
 	<!-- <div>
 		<label for="companion">Companion:</label>
 		<input type="text" name="companion" id="companion">

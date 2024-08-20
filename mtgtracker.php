@@ -4,10 +4,11 @@ require_once "php/includes/start.php";
 $username = $_POST["username"] ?? null;
 $name     = $_POST["name"]     ?? null;
 
-$owner     = $_POST["owner"]     ?? null;
-$commander = $_POST["commander"] ?? null;
-$partner   = $_POST["partner"]   ?? null;
-$companion = $_POST["companion"] ?? null;
+$owner      = $_POST["owner"]      ?? null;
+$commander  = $_POST["commander"]  ?? null;
+$partner    = $_POST["partner"]    ?? null;
+$companion  = $_POST["companion"]  ?? null;
+$background = $_POST["background"] ?? null;
 
 $players[0] = $_POST["player1"] ?? null;
 $players[1] = $_POST["player2"] ?? null;
@@ -68,14 +69,18 @@ if (isset($_POST["addDeck"])) {
 	if (isset($error)) {
 		$errors["$error companion"] = true;
 	}
+	$error = validateBackground($background);
+	if (isset($error)) {
+		$errors["$error background"] = true;
+	}
 	if (count($errors) === 0) {
-		$pdo   = connectDB();
-		$query = "INSERT INTO decks (owner, commander, partner) VALUES (?, ?, ?);";
+		$query = "INSERT INTO decks (owner, commander, partner, background) VALUES (?, ?, ?, ?);";
 		$stmt  = $pdo->prepare($query);
 		$stmt->execute([
 			$owner,
 			$commander,
-			$partner
+			$partner,
+			$background
 		]);
 	}
 }

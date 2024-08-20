@@ -1,8 +1,6 @@
 <?php
 require_once "php/includes/start.php";
 
-$pdo = connectDB();
-
 $id = $_GET['id'] ?? null;
 
 $gamesQuery = "SELECT * FROM `games` WHERE `id` = ?";

@@ -1,6 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 require_once "php/includes/start.php";
 
 $id1 = $_POST['deck1'] ?? null;
@@ -11,9 +9,16 @@ if (isset($id1) && isset($id2)) {
 	die();
 }
 
-$pdo = connectDB();
-
-$decksQuery = "SELECT `id`, `commander`, `partner` FROM `decks`";
+$decksQuery = "SELECT
+	`decks`.`id`,
+	`commander`,
+	`partner`,
+	`background`,
+	`name`
+FROM `decks`
+LEFT JOIN `players`
+ON `decks`.`owner` = `players`.`id`
+WHERE `players`.`priority` > 0";
 $decksStmt = $pdo->prepare($decksQuery);
 $decksStmt->execute();
 
@@ -39,9 +44,43 @@ $matchup = array();
 $games = array();
 
 if (isset($id1) && isset($id2)) {
-	$query = "CALL `DeckHeadToHead`(?, ?)";
+	$query = "SELECT
+	`all_decks`.*,
+	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
+	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
+FROM `game_participation` AS `gpA`
+INNER JOIN `game_participation` AS `gpB`
+ON 	`gpA`.`game_id` = `gpB`.`game_id` AND
+	`gpA`.`deck_id` = ? AND
+	`gpB`.`deck_id` = ?
+LEFT JOIN `game_participation` AS `gp`
+ON	`gp`.`game_id` = `gpA`.`game_id`
+LEFT JOIN `decks` AS `all_decks`
+ON	`all_decks`.`id` = `gp`.`deck_id`
+LEFT JOIN `games` AS `won_games`
+ON	`won_games`.`id` = `gp`.`game_id` AND
+	`won_games`.`winning_deck` = `all_decks`.`id`
+LEFT JOIN `games` AS `lost_games`
+ON	`lost_games`.`id` = `gp`.`game_id` AND
+	`lost_games`.`winning_deck` <> `all_decks`.`id`
+WHERE
+	(`won_games`.`date` >= ? AND
+	`won_games`.`date` <= ?) OR
+	(`lost_games`.`date` >= ? AND
+	`lost_games`.`date` <= ?)
+GROUP BY `all_decks`.`id`
+HAVING `wins` > 0 OR `losses` > 0
+ORDER BY `win rate` DESC;";
 	$results = $pdo->prepare($query);
-	$results->execute([$id1, $id2]);
+	$results->execute([
+		$id1,
+		$id2,
+		$settings['start_date'],
+		$settings['end_date'],
+		$settings['start_date'],
+		$settings['end_date']
+	]);
 
 	foreach ($results as $r) {
 		$matchup[] = $r;
@@ -49,9 +88,29 @@ if (isset($id1) && isset($id2)) {
 
 	$results->closeCursor();
 
-	$gamesQuery = "SELECT `games`.`id`, `games`.`date`, `players`.`name`, `decks`.`commander`, `decks`.`partner` FROM `games` LEFT JOIN `decks` ON `games`.`winning_deck` = `decks`.`id` LEFT JOIN `players` ON `games`.`winning_player` = `players`.`id` LEFT JOIN `game_participation` AS `gpA` ON `games`.`id` = `gpA`.`game_id` LEFT JOIN `game_participation` AS `gpB` ON `games`.`id` = `gpB`.`game_id` WHERE `gpA`.`deck_id` = ? AND `gpB`.`deck_id` = ? ORDER BY `games`.`id` DESC";
+	$gamesQuery = "SELECT
+	`games`.`id`,
+	`games`.`date`,
+	`players`.`name`,
+	`decks`.`commander`,
+	`decks`.`partner`
+FROM `games`
+LEFT JOIN `decks`
+ON `games`.`winning_deck` = `decks`.`id`
+LEFT JOIN `players`
+ON `games`.`winning_player` = `players`.`id`
+LEFT JOIN `game_participation` AS `gpA`
+ON `games`.`id` = `gpA`.`game_id`
+LEFT JOIN `game_participation` AS `gpB`
+ON `games`.`id` = `gpB`.`game_id`
+WHERE `gpA`.`deck_id` = ? AND
+      `gpB`.`deck_id` = ? 
+ORDER BY `games`.`id` DESC";
 	$games = $pdo->prepare($gamesQuery);
-	$games->execute([$id1, $id2]);
+	$games->execute([
+		$id1,
+		$id2
+	]);
 }
 
 require_once "php/includes/head.php";
@@ -68,7 +127,7 @@ require_once "php/includes/header.php";
 				<select class="deckSelect" id="deck1" name="deck1">
 					<option <?= isset($id1) ? "" : "selected" ?>></option>
 					<?php foreach ($decks as $deck): ?>
-					<option value=<?= $deck['id'] ?> <?= $deck['id'] == $id1 ? "selected" : "" ?>><?= $deck['partner'] != "" ? $deck['commander']." // ".$deck['partner'] : $deck['commander'] ?></option>
+					<option value=<?= $deck['id'] ?> <?= $deck['id'] == $id1 ? "selected" : "" ?>><?= $deck['partner'] != "" ? $deck['commander']." // ".$deck['partner'] : $deck['commander']," (".$deck['name'].")" ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
