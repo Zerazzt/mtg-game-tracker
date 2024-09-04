@@ -4,7 +4,7 @@ define('DOCROOT', "/$direx[1]/$direx[2]/");
 define('WEBROOT', "/$direx[1]/$direx[2]/$direx[3]/");
 
 function connectDB() {
-	$config = explode(PHP_EOL, file_get_contents(DOCROOT."pwd/config.ini"));
+	$config = explode(PHP_EOL, file_get_contents(DOCROOT."pwd/mtgtracker.ini"));
 
 	$dsn = "mysql:host=$config[0];port=3306;dbname=$config[1];charset=utf8mb4";
 	try {
