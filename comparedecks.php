@@ -136,7 +136,7 @@ require_once "php/includes/header.php";
 				<select class="deckSelect" id="deck2" name="deck2">
 					<option <?= isset($id2) ? "" : "selected" ?>></option>
 					<?php foreach ($decks as $deck): ?>
-					<option value=<?= $deck['id'] ?> <?= $deck['id'] == $id2 ? "selected" : "" ?>><?= $deck['partner'] != "" ? $deck['commander']." // ".$deck['partner'] : $deck['commander'] ?></option>
+					<option value=<?= $deck['id'] ?> <?= $deck['id'] == $id2 ? "selected" : "" ?>><?= $deck['partner'] != "" ? $deck['commander']." // ".$deck['partner'] : $deck['commander']," (".$deck['name'].")" ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
