@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require_once "php/includes/start.php";
 
 $id = $_GET['id'] ?? null;
@@ -7,18 +9,46 @@ $deckQuery = "SELECT
 	`decks`.`id`,
 	`decks`.`commander`,
 	`decks`.`partner`,
-	`deck_win_rates`.`wins`,
-	`deck_win_rates`.`losses`,
-	`deck_win_rates`.`win rate`,
+	`decks`.`background`,
 	`players`.`id` AS `owner_id`,
-	`players`.`name`
+	`players`.`name`,
+	COUNT(DISTINCT `won games`.`id`) AS `wins`,
+	COUNT(DISTINCT `lost games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won games`.`id`) / (COUNT(DISTINCT `won games`.`id`) + COUNT(DISTINCT `lost games`.`id`)) * 100 AS `win rate`
 FROM `decks`
-LEFT JOIN `deck_win_rates`
-ON `decks`.`id` = `deck_win_rates`.`id`
-LEFT JOIN `players` ON `decks`.`owner` = `players`.`id`
-WHERE `decks`.`id` = ?";
+LEFT JOIN `players`
+ON `decks`.`owner` = `players`.`id`
+LEFT JOIN `game_participation` AS `played games`
+ON `decks`.`id` = `played games`.`deck_id`
+LEFT JOIN `games` AS `won games`
+ON
+	`played games`.`game_id` = `won games`.`id` AND
+	`won games`.`winning_deck` = `decks`.`id`
+LEFT JOIN `games` AS `lost games`
+ON
+	`played games`.`game_id` = `lost games`.`id` AND
+	`lost games`.`winning_deck` <> `decks`.`id`
+WHERE
+	`decks`.`id` = ? AND
+	(
+		(
+			`won games`.`date` >= ? AND
+			`won games`.`date` <= ?
+		) OR
+		(
+			`lost games`.`date` >= ? AND
+			`lost games`.`date` <= ?
+		)
+	)
+GROUP BY `decks`.`id`;";
 $deck = $pdo->prepare($deckQuery);
-$deck->execute([$id]);
+$deck->execute([
+	$id,
+	$settings['start_date'],
+	$settings['end_date'],
+	$settings['start_date'],
+	$settings['end_date']
+]);
 $deckData = $deck->fetch();
 
 $gamesQuery = "SELECT `games`.`id` AS `id`, `games`.`date`, `players`.`id` AS `player id`, `players`.`name`, `games`.`winning_deck` FROM `game_participation` LEFT JOIN `games` ON `games`.`id` = `game_participation`.`game_id` LEFT JOIN `players` on `game_participation`.`player_id` = `players`.`id` WHERE `game_participation`.`deck_id` = ? ORDER BY `games`.`date` DESC, `games`.`id` DESC";

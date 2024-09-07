@@ -12,7 +12,7 @@ CREATE TABLE `settings` (
 	`start_date` date,
 	`end_date` date,
 	`minimum` int,
-	`display max` int
+	`display max` int,
 	PRIMARY KEY (id)
 );
 
@@ -67,51 +67,6 @@ CREATE TABLE `game_tags` (
 	FOREIGN KEY (game_id) REFERENCES games(id),
 	FOREIGN KEY (tag_id) REFERENCES tags(id)
 );
-
-CREATE VIEW `player_win_rates` AS
-SELECT
-	`players`.`id`,
-	`players`.`name`,
-	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
-	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
-	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
-FROM `players`
-LEFT JOIN `game_participation` AS `played_games`
-ON	`players`.`id` = `played_games`.`player_id`
-LEFT JOIN `games` AS `won_games`
-ON	`played_games`.`game_id` = `won_games`.`id` AND
-	`won_games`.`winning_player` = `players`.`id`
-LEFT JOIN `games` AS `lost_games`
-ON	`played_games`.`game_id` = `lost_games`.`id` AND
-	`lost_games`.`winning_player` <> `players`.`id`
-GROUP BY `players`.`id`
-HAVING `wins` > 0 OR `losses` > 0
-ORDER BY `win rate` DESC;
-
-CREATE VIEW `deck_win_rates` AS
-SELECT
-	`decks`.`id`,
-	`decks`.`commander`,
-	`decks`.`partner`,
-	`decks`.`owner`,
-	`players`.`name`,
-	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
-	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
-	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
-FROM `decks`
-LEFT JOIN `players`
-ON `decks`.`owner` = `players`.`id`
-LEFT JOIN `game_participation` AS `played_games`
-ON `decks`.`id` = `played_games`.`deck_id`
-LEFT JOIN `games` AS `won_games`
-ON	`played_games`.`game_id` = `won_games`.`id` AND
-	`won_games`.`winning_deck` = `decks`.`id`
-LEFT JOIN `games` AS `lost_games`
-ON `played_games`.`game_id` = `lost_games`.`id` AND
-	`lost_games`.`winning_deck` <> `decks`.`id`
-GROUP BY `decks`.`id`
-HAVING `wins` > 0 OR `losses` > 0
-ORDER BY `win rate` DESC;
 
 CREATE PROCEDURE `RestrictedDeckWinRate`(IN `player_count` INT)
 NOT DETERMINISTIC
