@@ -100,11 +100,6 @@ h2 {
 	font-size:2rem;
 }
 
-h2 a {
-	text-decoration:none;
-	color:#000;
-}
-
 select {
 	width:10rem;
 }
@@ -200,90 +195,20 @@ form > div > button {
 	border-radius:0.5rem;
 }
 
-/* .opener {
-	border-radius:0;
-	background-color:rgba(0,0,0,0.8);
-} */
+.list {
+	display:flex;
+	flex-direction:row;
+	justify-content:center;
+	align-items:center;
+	padding:1rem;
+}
+
+.list > a {
+	padding:1rem 2rem;
+}
 
 form > div > button {
 	width:100%;
-}
-
-.carousel {
-	width:100%;
-	min-height:50vh;
-	position:relative;
-	background-color:black;
-	display:flex;
-	align-items:center;
-}
-
-.carousel div {
-	height:100%;
-}
-
-.carousel-control {
-	cursor:pointer;
-	position:absolute;
-	top:0%;
-	width:auto;
-	padding-left:1rem;
-	padding-right:1rem;
-	padding-top:auto;
-	padding-bottom:auto;
-	transition:0.6s ease;
-	user-select:none;
-	color:white;
-	background-color:rgba(50, 50, 50, 0.75);
-	z-index:1;
-}
-
-.carousel-control i {
-	position:absolute;
-	top:50%;
-}
-
-.left-button i {
-	left:50%;
-	transform:translate(-50%, 0);
-}
-
-.right-button i {
-	right:50%;
-	transform:translate(50%, 0);
-}
-
-.carousel figure {
-	animation-name:fade;
-	animation-duration:2s;
-	max-width:50rem;
-	width:100%;
-	margin:auto;
-	padding: 1rem 0;
-	display:flex;
-	flex-direction:column;
-	align-items:center;
-	justify-content:center;
-}
-
-.carousel figure img {
-	max-width:100%;
-}
-
-.carousel figcaption {
-	font-size:1rem;
-	max-width:100%;
-	color:white;
-}
-
-.right-button {
-	right:0;
-}
-
-.icon::before {
-	display:inline-block;
-	text-rendering:auto;
-	-webkit-font-smoothing:antialiased;
 }
 
 .link::after {

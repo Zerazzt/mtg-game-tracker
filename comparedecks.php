@@ -120,7 +120,7 @@ require_once "php/includes/header.php";
 ?>
 <main>
 	<div class="single">
-		<h2>Compare Decks</h2>
+		<h1>Compare Decks</h2>
 		<form method="post" class="container user">
 			<div>
 				<label for="deck1">Deck 1:</label>

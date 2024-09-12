@@ -116,7 +116,7 @@ require_once "php/includes/header.php";
 ?>
 <main>
 	<div class="single">
-		<h2>Compare Players</h2>
+		<h1>Compare Players</h2>
 		<form method="post" class="container user">
 			<div>
 				<label for="player1">Player 1:</label>

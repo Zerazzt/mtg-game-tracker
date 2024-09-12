@@ -1,6 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 require_once "php/includes/start.php";
 
 $pdo = connectDB();
@@ -34,7 +32,14 @@ if (isset($_POST['updateSettings'])) {
 	]);
 }
 
-$playersQuery = "SELECT `id`, `username`, `name`, `priority` FROM `players` ORDER BY `priority` DESC, `id` ASC";
+$playersQuery = "SELECT
+	`id`,
+	`username`,
+	`name`,
+	`priority`
+FROM `players`
+ORDER BY `priority` DESC,
+`id` ASC";
 $players = $pdo->prepare($playersQuery);
 $players->execute();
 

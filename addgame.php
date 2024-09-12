@@ -32,27 +32,40 @@ $playerSet = $stmt->fetchAll();
 $stmt->closeCursor();
 
 if (isset($_POST["addGame"])) {
-	$query = "INSERT INTO games (winning_player, winning_deck, date) VALUES (?, ?, NOW());";
-	$stmt  = $pdo->prepare($query);
-	$stmt->execute([
-		$players[$winner - 1],
-		$decks[$winner - 1]
-	]);
-	$game_id = getLastGameID();
-	for ($i = 0; $i < MAX_PLAYER_COUNT; ++$i) {
-		if (isset($players[$i]) && isset($decks[$i])) {
-			$query = "INSERT INTO game_participation (game_id, player_id, deck_id, turn_order) VALUES (?, ?, ?, ?);";
-			$stmt = $pdo->prepare($query);
-			$stmt->execute([
-				$game_id,
-				$players[$i],
-				$decks[$i],
-				$i
-			]);
+	$gameQuery = "INSERT INTO `games` (`winning_player`, `winning_deck`, `date`) VALUES (?, ?, NOW());";
+	$gameStmt = $pdo->prepare($gameQuery);
+
+	$gpQuery = "INSERT INTO `game_participation` (`game_id`, `player_id`, `deck_id`, `turn_order`) VALUES (?, ?, ?, ?);";
+	$gpStmt = $pdo->prepare($gpQuery);
+
+	try {
+		$pdo->beginTransaction();
+		$gameStmt->execute([
+			$players[$winner - 1],
+			$decks[$winner - 1]
+		]);
+		$gameStmt->closeCursor();
+		$gameId = $pdo->lastInsertId();
+
+		for ($i = 0; $i < MAX_PLAYER_COUNT; ++$i) {
+			if (isset($players[$i]) && isset($decks[$i])) {
+				$gpStmt->execute([
+					$gameId,
+					$players[$i],
+					$decks[$i],
+					$i
+				]);
+				$gpStmt->closeCursor();
+			}
+			else {
+				$i = MAX_PLAYER_COUNT;
+			}
 		}
-		else {
-			$i = MAX_PLAYER_COUNT;
-		}
+		$pdo->commit();
+	}
+	catch (PDOException $e) {
+		$pdo->rollback();
+		$errors['pdo'] = true;
 	}
 }
 
@@ -102,6 +115,7 @@ require_once "php/includes/header.php";
 			endfor;
 			?>
 			<button type="submit" name="addGame">Submit</button>
+			<span class="error<?= isset($errors['pdo']) == true ? "" : " hidden" ?>">Error inserting game. Please try again.</span>
 		</form>
 	</div>
 </main>

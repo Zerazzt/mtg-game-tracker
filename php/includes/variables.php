@@ -7,6 +7,13 @@ $pages = [
 		"logged_in_nav" => false,
 		"logged_out_nav" => false,
 	],
+	"allplayers" => [
+		"route" => "/players/",
+		"title" => "Players",
+		"require_logged_in" => false,
+		"logged_in_nav" => true,
+		"logged_out_nav" => false
+	],
 	"mtgtracker" => [
 		"route" => "/tracker/",
 		"title" => "Add Data",
