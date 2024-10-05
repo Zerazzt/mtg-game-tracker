@@ -9,6 +9,7 @@ CREATE TABLE `admin` (
 
 CREATE TABLE `settings` (
 	`id` int NOT NULL AUTO_INCREMENT,
+	`name` varchar(64) NOT NULL,
 	`start_date` date,
 	`end_date` date,
 	`minimum` int,

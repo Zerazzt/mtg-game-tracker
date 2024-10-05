@@ -2,7 +2,7 @@
 $pages = [
 	"index" => [
 		"route" => "/",
-		"title" => "Trent Magic the Gathering Community",
+		"title" => "Home",
 		"require_logged_in" => false,
 		"logged_in_nav" => false,
 		"logged_out_nav" => false,

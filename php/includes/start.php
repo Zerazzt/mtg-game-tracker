@@ -7,7 +7,14 @@ session_start();
 $page_name = basename($_SERVER['PHP_SELF'], '.php');
 
 $pdo = connectDB();
-$query = "SELECT `start_date`, `end_date`, `minimum`, `display max` FROM `settings` WHERE `id` = 1";
+$query = "SELECT
+	`start_date`,
+	`name`,
+	`end_date`,
+	`minimum`,
+	`display max`
+FROM `settings`
+WHERE `id` = 1;";
 $stmt = $pdo->prepare($query);
 $stmt->execute();
 $settings = $stmt->fetch();
