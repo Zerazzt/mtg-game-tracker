@@ -12,7 +12,7 @@ $pages = [
 		"title" => "Players",
 		"require_logged_in" => false,
 		"logged_in_nav" => true,
-		"logged_out_nav" => false
+		"logged_out_nav" => true
 	],
 	"mtgtracker" => [
 		"route" => "/tracker/",
@@ -105,6 +105,12 @@ $pages = [
 		"logged_in_nav" => false,
 		"logged_out_nav" => false,
 	],
+];
+
+$files = [
+	"privacy policy" => [
+		"route" => "/privacy-policy/"
+	]
 ];
 
 DEFINE("MAX_PLAYER_COUNT", 8);
