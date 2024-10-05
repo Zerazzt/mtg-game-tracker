@@ -13,7 +13,10 @@ $playersQuery = "SELECT
 	`id`,
 	`name`
 FROM `players`
-WHERE `priority` > 0";
+WHERE `priority` > 0
+ORDER BY
+	`priority` DESC,
+	`id` ASC;";
 $playersStmt = $pdo->prepare($playersQuery);
 $playersStmt->execute();
 

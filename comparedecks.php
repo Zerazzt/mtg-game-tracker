@@ -18,7 +18,11 @@ $decksQuery = "SELECT
 FROM `decks`
 LEFT JOIN `players`
 ON `decks`.`owner` = `players`.`id`
-WHERE `players`.`priority` > 0";
+WHERE `players`.`priority` > 0
+ORDER BY
+	`players`.`priority` DESC,
+	`players`.`id` ASC,
+	`decks`.`id` ASC;";
 $decksStmt = $pdo->prepare($decksQuery);
 $decksStmt->execute();
 
