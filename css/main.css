@@ -34,6 +34,19 @@ footer {
 	color:#ddd;
 	padding:0.2rem;
 	border-top:0.3rem #fff solid;
+	display:flex;
+	flex-direction:row;
+	align-items:center;
+	justify-content:center;
+}
+
+footer * {
+	padding:0 0.2rem;
+}
+
+footer a,
+footer a:visited {
+	color: #ddd;
 }
 
 nav {
@@ -176,7 +189,8 @@ form.login {
 	row-gap:0.5rem;
 }
 
-form > button {
+form > button,
+form input[type=date] {
 	grid-column:1 / -1;
 }
 
@@ -201,6 +215,7 @@ form > div > button {
 	justify-content:center;
 	align-items:center;
 	padding:1rem;
+	flex-wrap:wrap;
 }
 
 .list > a {

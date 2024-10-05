@@ -1,6 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 require_once "php/includes/start.php";
 
 $players[0] = $_POST["player1"] ?? null;
@@ -23,6 +21,8 @@ $decks[7] = $_POST["deck8"] ?? null;
 
 $winner = $_POST["winner"]	?? null;
 
+$date = $_POST["date"] ?? null;
+
 $errors = array();
 
 $query = "SELECT `id`, `name` FROM `players` WHERE `priority` > 0 ORDER BY `priority` DESC, `id` ASC";
@@ -32,7 +32,7 @@ $playerSet = $stmt->fetchAll();
 $stmt->closeCursor();
 
 if (isset($_POST["addGame"])) {
-	$gameQuery = "INSERT INTO `games` (`winning_player`, `winning_deck`, `date`) VALUES (?, ?, NOW());";
+	$gameQuery = "INSERT INTO `games` (`winning_player`, `winning_deck`, `date`) VALUES (?, ?, ?);";
 	$gameStmt = $pdo->prepare($gameQuery);
 
 	$gpQuery = "INSERT INTO `game_participation` (`game_id`, `player_id`, `deck_id`, `turn_order`) VALUES (?, ?, ?, ?);";
@@ -42,7 +42,8 @@ if (isset($_POST["addGame"])) {
 		$pdo->beginTransaction();
 		$gameStmt->execute([
 			$players[$winner - 1],
-			$decks[$winner - 1]
+			$decks[$winner - 1],
+			$date
 		]);
 		$gameStmt->closeCursor();
 		$gameId = $pdo->lastInsertId();
@@ -114,9 +115,10 @@ require_once "php/includes/header.php";
 			<?php
 			endfor;
 			?>
+			<input type="date" name="date" id="date" value=<?= date('Y-m-d') ?>>
 			<button type="submit" name="addGame">Submit</button>
 			<span class="error<?= isset($errors['pdo']) == true ? "" : " hidden" ?>">Error inserting game. Please try again.</span>
 		</form>
-	</div>
+</div>
 </main>
 <?php require_once "php/includes/footer.php"; ?>
