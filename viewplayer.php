@@ -12,6 +12,7 @@ $ownedDecksQuery = "SELECT
 	`players`.`name`,
 	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
 	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`) AS `played`,
 	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
 FROM `decks`
 LEFT JOIN `players`
@@ -41,7 +42,11 @@ WHERE
 		`lost_games`.`date` IS NULL
 	)
 GROUP BY `decks`.`id`
-ORDER BY `win rate` DESC";
+ORDER BY
+	`win rate` DESC,
+	`played` DESC,
+	`id` ASC;";
+
 $decks = $pdo->prepare($ownedDecksQuery);
 $decks->execute([
 	$id,
@@ -119,6 +124,7 @@ $playedDecksResultsQuery = "SELECT
 	`all_decks`.`background`,
 	COUNT(DISTINCT `won_games`.`id`) AS `wins`,
 	COUNT(DISTINCT `lost_games`.`id`) AS `losses`,
+	COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`) AS `played`,
 	COUNT(DISTINCT `won_games`.`id`) / (COUNT(DISTINCT `won_games`.`id`) + COUNT(DISTINCT `lost_games`.`id`)) * 100 AS `win rate`
 FROM `game_participation` AS `gpA`
 LEFT JOIN `game_participation` AS `gp`
@@ -142,7 +148,10 @@ WHERE
 		`lost_games`.`date` <= ?
 	)
 GROUP BY `all_decks`.`id`
-ORDER BY `win rate` DESC;";
+ORDER BY
+	`win rate` DESC,
+	`played` DESC,
+	`id` ASC;";
 $playedDecksResults = $pdo->prepare($playedDecksResultsQuery);
 $playedDecksResults->execute([
 	$id,
@@ -220,7 +229,7 @@ require_once "php/includes/header.php";
 				</tr>
 				<?php while ($game = $gamesPlayed->fetch()): ?>
 				<tr class="<?= $game['winning_player'] == $id ? "winner" : "loser" ?>">
-					<td><a href="<?= $pages['viewgame']['route'].$game['id']."/" ?>"?><?= $game['id'] ?></a></td>
+					<td><a href="<?= $pages['viewgame']['route'].$game['id']."/" ?>"><?= $game['id'] ?></a></td>
 					<td><?= $game['date'] ?></td>
 					<td><a href="<?= $pages['viewdeck']['route'].$game['deck id']."/" ?>"><?=$game['partner'] != "" ? $game['commander']." // ".$game['partner'] : $game['commander'] ?></a></td>
 				</tr>
@@ -229,3 +238,4 @@ require_once "php/includes/header.php";
 		</section>
 	</div>
 </main>
+<?php require "php/includes/footer.php"; ?>
