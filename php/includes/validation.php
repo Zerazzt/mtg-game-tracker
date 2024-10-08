@@ -26,6 +26,14 @@ function validateName($name) {
 	return $error;
 }
 
+function validateOrganisation($org) {
+	$error = null;
+	if (strlen($org) === 0 || strlen(htmlentities($org)) > 64) {
+		$error = "invalid";
+	}
+	return $error;
+}
+
 function validateOwner($owner) {
 	$error = null;
 	$pdo   = connectDB();

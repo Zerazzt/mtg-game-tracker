@@ -189,6 +189,10 @@ form.login {
 	row-gap:0.5rem;
 }
 
+form input {
+	width: 100%;
+}
+
 form > button,
 form input[type=date] {
 	grid-column:1 / -1;
