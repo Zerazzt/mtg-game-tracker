@@ -38,3 +38,4 @@ require_once "php/includes/header.php";
 		<a href="<?= $pages['viewgame']['route'].($id + 1)."/" ?>">Next</a>
 	</div>
 </main>
+<?php require_once "php/includes/footer.php"; ?>
